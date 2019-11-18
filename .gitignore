@@ -1,6 +1,12 @@
 # Prerequisites
 *.d
 
+#Project Files
+*.sln
+*.vc*
+*.pro
+*.pro.user
+
 # Compiled Object files
 *.slo
 *.lo
