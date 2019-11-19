@@ -1,0 +1,11 @@
+#include "gameobject.h"
+
+GameObject::GameObject()
+{
+    
+}
+
+void GameObject::draw()
+{
+    
+}
