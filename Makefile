@@ -52,8 +52,12 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = main.cpp 
-OBJECTS       = main.o
+SOURCES       = game.cpp \
+		graphics.cpp \
+		main.cpp 
+OBJECTS       = game.o \
+		graphics.o \
+		main.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
 		/usr/lib/qt/mkspecs/common/linux.conf \
@@ -236,7 +240,6 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/features/qt_config.prf \
 		/usr/lib/qt/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/qt/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/usr/lib/qt/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/qt/mkspecs/features/toolchain.prf \
 		/usr/lib/qt/mkspecs/features/default_pre.prf \
@@ -250,7 +253,10 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/features/exceptions.prf \
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
-		SFML-Project.pro  main.cpp
+		SFML-Project.pro game.h \
+		graphics.h game.cpp \
+		graphics.cpp \
+		main.cpp
 QMAKE_TARGET  = SFML.out
 DESTDIR       = 
 TARGET        = SFML.out
@@ -444,7 +450,6 @@ Makefile: SFML-Project.pro /usr/lib/qt/mkspecs/linux-g++/qmake.conf /usr/lib/qt/
 		/usr/lib/qt/mkspecs/features/qt_config.prf \
 		/usr/lib/qt/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/qt/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/usr/lib/qt/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/qt/mkspecs/features/toolchain.prf \
 		/usr/lib/qt/mkspecs/features/default_pre.prf \
@@ -642,7 +647,6 @@ Makefile: SFML-Project.pro /usr/lib/qt/mkspecs/linux-g++/qmake.conf /usr/lib/qt/
 /usr/lib/qt/mkspecs/features/qt_config.prf:
 /usr/lib/qt/mkspecs/linux-g++/qmake.conf:
 /usr/lib/qt/mkspecs/features/spec_post.prf:
-.qmake.stash:
 /usr/lib/qt/mkspecs/features/exclusive_builds.prf:
 /usr/lib/qt/mkspecs/features/toolchain.prf:
 /usr/lib/qt/mkspecs/features/default_pre.prf:
@@ -699,6 +703,161 @@ compiler_lex_clean:
 compiler_clean: 
 
 ####### Compile
+
+game.o: game.cpp game.h \
+		include/SFML/Graphics.hpp \
+		include/SFML/Window.hpp \
+		include/SFML/System.hpp \
+		include/SFML/Config.hpp \
+		include/SFML/System/Clock.hpp \
+		include/SFML/System/Export.hpp \
+		include/SFML/System/Time.hpp \
+		include/SFML/System/Err.hpp \
+		include/SFML/System/FileInputStream.hpp \
+		include/SFML/System/InputStream.hpp \
+		include/SFML/System/NonCopyable.hpp \
+		include/SFML/System/Lock.hpp \
+		include/SFML/System/MemoryInputStream.hpp \
+		include/SFML/System/Mutex.hpp \
+		include/SFML/System/Sleep.hpp \
+		include/SFML/System/String.hpp \
+		include/SFML/System/Utf.hpp \
+		include/SFML/System/Utf.inl \
+		include/SFML/System/String.inl \
+		include/SFML/System/Thread.hpp \
+		include/SFML/System/Thread.inl \
+		include/SFML/System/ThreadLocal.hpp \
+		include/SFML/System/ThreadLocalPtr.hpp \
+		include/SFML/System/ThreadLocalPtr.inl \
+		include/SFML/System/Vector2.hpp \
+		include/SFML/System/Vector2.inl \
+		include/SFML/System/Vector3.hpp \
+		include/SFML/System/Vector3.inl \
+		include/SFML/Window/Clipboard.hpp \
+		include/SFML/Window/Export.hpp \
+		include/SFML/Window/Context.hpp \
+		include/SFML/Window/GlResource.hpp \
+		include/SFML/Window/ContextSettings.hpp \
+		include/SFML/Window/Cursor.hpp \
+		include/SFML/Window/Event.hpp \
+		include/SFML/Window/Joystick.hpp \
+		include/SFML/Window/Keyboard.hpp \
+		include/SFML/Window/Mouse.hpp \
+		include/SFML/Window/Sensor.hpp \
+		include/SFML/Window/Touch.hpp \
+		include/SFML/Window/VideoMode.hpp \
+		include/SFML/Window/Window.hpp \
+		include/SFML/Window/WindowHandle.hpp \
+		include/SFML/Window/WindowStyle.hpp \
+		include/SFML/Graphics/BlendMode.hpp \
+		include/SFML/Graphics/Export.hpp \
+		include/SFML/Graphics/CircleShape.hpp \
+		include/SFML/Graphics/Shape.hpp \
+		include/SFML/Graphics/Drawable.hpp \
+		include/SFML/Graphics/RenderStates.hpp \
+		include/SFML/Graphics/Transform.hpp \
+		include/SFML/Graphics/Rect.hpp \
+		include/SFML/Graphics/Rect.inl \
+		include/SFML/Graphics/Transformable.hpp \
+		include/SFML/Graphics/VertexArray.hpp \
+		include/SFML/Graphics/Vertex.hpp \
+		include/SFML/Graphics/Color.hpp \
+		include/SFML/Graphics/PrimitiveType.hpp \
+		include/SFML/Graphics/ConvexShape.hpp \
+		include/SFML/Graphics/Font.hpp \
+		include/SFML/Graphics/Glyph.hpp \
+		include/SFML/Graphics/Texture.hpp \
+		include/SFML/Graphics/Image.hpp \
+		include/SFML/Graphics/RectangleShape.hpp \
+		include/SFML/Graphics/RenderTarget.hpp \
+		include/SFML/Graphics/View.hpp \
+		include/SFML/Graphics/RenderTexture.hpp \
+		include/SFML/Graphics/RenderWindow.hpp \
+		include/SFML/Graphics/Shader.hpp \
+		include/SFML/Graphics/Glsl.hpp \
+		include/SFML/Graphics/Glsl.inl \
+		include/SFML/Graphics/Sprite.hpp \
+		include/SFML/Graphics/Text.hpp \
+		include/SFML/Graphics/VertexBuffer.hpp \
+		graphics.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game.o game.cpp
+
+graphics.o: graphics.cpp graphics.h \
+		include/SFML/Graphics.hpp \
+		include/SFML/Window.hpp \
+		include/SFML/System.hpp \
+		include/SFML/Config.hpp \
+		include/SFML/System/Clock.hpp \
+		include/SFML/System/Export.hpp \
+		include/SFML/System/Time.hpp \
+		include/SFML/System/Err.hpp \
+		include/SFML/System/FileInputStream.hpp \
+		include/SFML/System/InputStream.hpp \
+		include/SFML/System/NonCopyable.hpp \
+		include/SFML/System/Lock.hpp \
+		include/SFML/System/MemoryInputStream.hpp \
+		include/SFML/System/Mutex.hpp \
+		include/SFML/System/Sleep.hpp \
+		include/SFML/System/String.hpp \
+		include/SFML/System/Utf.hpp \
+		include/SFML/System/Utf.inl \
+		include/SFML/System/String.inl \
+		include/SFML/System/Thread.hpp \
+		include/SFML/System/Thread.inl \
+		include/SFML/System/ThreadLocal.hpp \
+		include/SFML/System/ThreadLocalPtr.hpp \
+		include/SFML/System/ThreadLocalPtr.inl \
+		include/SFML/System/Vector2.hpp \
+		include/SFML/System/Vector2.inl \
+		include/SFML/System/Vector3.hpp \
+		include/SFML/System/Vector3.inl \
+		include/SFML/Window/Clipboard.hpp \
+		include/SFML/Window/Export.hpp \
+		include/SFML/Window/Context.hpp \
+		include/SFML/Window/GlResource.hpp \
+		include/SFML/Window/ContextSettings.hpp \
+		include/SFML/Window/Cursor.hpp \
+		include/SFML/Window/Event.hpp \
+		include/SFML/Window/Joystick.hpp \
+		include/SFML/Window/Keyboard.hpp \
+		include/SFML/Window/Mouse.hpp \
+		include/SFML/Window/Sensor.hpp \
+		include/SFML/Window/Touch.hpp \
+		include/SFML/Window/VideoMode.hpp \
+		include/SFML/Window/Window.hpp \
+		include/SFML/Window/WindowHandle.hpp \
+		include/SFML/Window/WindowStyle.hpp \
+		include/SFML/Graphics/BlendMode.hpp \
+		include/SFML/Graphics/Export.hpp \
+		include/SFML/Graphics/CircleShape.hpp \
+		include/SFML/Graphics/Shape.hpp \
+		include/SFML/Graphics/Drawable.hpp \
+		include/SFML/Graphics/RenderStates.hpp \
+		include/SFML/Graphics/Transform.hpp \
+		include/SFML/Graphics/Rect.hpp \
+		include/SFML/Graphics/Rect.inl \
+		include/SFML/Graphics/Transformable.hpp \
+		include/SFML/Graphics/VertexArray.hpp \
+		include/SFML/Graphics/Vertex.hpp \
+		include/SFML/Graphics/Color.hpp \
+		include/SFML/Graphics/PrimitiveType.hpp \
+		include/SFML/Graphics/ConvexShape.hpp \
+		include/SFML/Graphics/Font.hpp \
+		include/SFML/Graphics/Glyph.hpp \
+		include/SFML/Graphics/Texture.hpp \
+		include/SFML/Graphics/Image.hpp \
+		include/SFML/Graphics/RectangleShape.hpp \
+		include/SFML/Graphics/RenderTarget.hpp \
+		include/SFML/Graphics/View.hpp \
+		include/SFML/Graphics/RenderTexture.hpp \
+		include/SFML/Graphics/RenderWindow.hpp \
+		include/SFML/Graphics/Shader.hpp \
+		include/SFML/Graphics/Glsl.hpp \
+		include/SFML/Graphics/Glsl.inl \
+		include/SFML/Graphics/Sprite.hpp \
+		include/SFML/Graphics/Text.hpp \
+		include/SFML/Graphics/VertexBuffer.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o graphics.o graphics.cpp
 
 main.o: main.cpp include/SFML/Graphics.hpp \
 		include/SFML/Window.hpp \
