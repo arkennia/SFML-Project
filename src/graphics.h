@@ -1,6 +1,9 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 #include <SFML/Graphics.hpp>
+#include <vector>
+
+class GameObject;
 class Graphics
 {
 public:
@@ -12,9 +15,11 @@ public:
         sf::Image image;
         std::string path;
     };
+    ~Graphics();
     Graphics(sf::RenderWindow &window);
+    void render(const std::vector<GameObject> &objs);
     void run();
-    void createTexture(std::string path, Sprite &sprite);
+    void createTexture(std::string path, GameObject &obj);
 
 private:
     sf::RenderWindow *window;

@@ -7,7 +7,6 @@ class GameObject
     friend class Graphics;
 public:
     GameObject();
-    void draw();
     void updatePosition(sf::Vector2<float> pos);
     void moveRelative(sf::Vector2<float> offset);
     void updateRotation(float angle);
@@ -16,7 +15,7 @@ public:
     void scaleRelative(sf::Vector2<float> offset);
     void setOrigin(sf::Vector2<float> origin);
 private:
-    Graphics::Sprite *sprite;
+    Graphics::Sprite sprite;
 };
 
 #endif // GAMEOBJECT_H
