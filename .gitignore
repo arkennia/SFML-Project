@@ -36,3 +36,16 @@
 *.exe
 *.out
 *.app
+
+# Made by Garrett
+*.gitattributes
+*.json
+*.suo
+*.ipch
+*.sqlite
+*.ilk
+*.log
+*.pdb
+*.tlog
+*.lastbuildstate
+*.idb
