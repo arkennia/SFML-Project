@@ -1,5 +1,6 @@
 #include "graphics.h"
 #include "gameobject.h"
+
 Graphics::~Graphics()
 {
     if(window)
@@ -8,7 +9,7 @@ Graphics::~Graphics()
 
 Graphics::Graphics(sf::RenderWindow &window)
 {
-    this->window = &window;
+	this->window = &window;
 }
 
 void Graphics::render(const std::vector<GameObject> &objs)

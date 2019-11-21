@@ -2,6 +2,7 @@
 #define GAMEOBJECT_H
 
 #include "graphics.h"
+
 class GameObject : public sf::Sprite
 {
     friend class Graphics;

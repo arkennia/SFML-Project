@@ -1,7 +1,8 @@
+#include <SFML/Graphics.hpp>
 #include <iostream>
 
-#include <SFML/Graphics.hpp>
 #include "game.h"
+
 int main()
 {
     Game g;

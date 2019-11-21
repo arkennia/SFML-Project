@@ -6,10 +6,12 @@
 #define DEFAULT_FPS 60
 #define MOVE_SPEED 500
 
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
-#include <SFML/Graphics.hpp>
+
 #include "gameobject.h"
+
 class Graphics;
 class Game
 {
