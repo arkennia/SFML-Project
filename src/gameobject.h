@@ -2,20 +2,17 @@
 #define GAMEOBJECT_H
 
 #include "graphics.h"
-class GameObject
+class GameObject : public sf::Sprite
 {
     friend class Graphics;
 public:
     GameObject();
-    void updatePosition(sf::Vector2<float> pos);
-    void moveRelative(sf::Vector2<float> offset);
-    void updateRotation(float angle);
-    void rotateRelative(float offset);
-    void updateScale(sf::Vector2<float> scale);
-    void scaleRelative(sf::Vector2<float> offset);
-    void setOrigin(sf::Vector2<float> origin);
+    void initDrawable(std::string path);
+    void updatePosition(float speed, sf::Time elapsed);
 private:
-    Graphics::Sprite sprite;
+    std::string path;
+    sf::Image image;
+    sf::Texture texture;
 };
 
 #endif // GAMEOBJECT_H

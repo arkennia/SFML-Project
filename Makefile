@@ -942,7 +942,8 @@ graphics.o: src/graphics.cpp src/graphics.h \
 		include/SFML/Graphics/Glsl.inl \
 		include/SFML/Graphics/Sprite.hpp \
 		include/SFML/Graphics/Text.hpp \
-		include/SFML/Graphics/VertexBuffer.hpp
+		include/SFML/Graphics/VertexBuffer.hpp \
+		src/gameobject.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o graphics.o src/graphics.cpp
 
 main.o: src/main.cpp include/SFML/Graphics.hpp \

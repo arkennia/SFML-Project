@@ -7,30 +7,33 @@ Game::Game()
 
 Game::~Game()
 {
-    if(window)
-        delete window;
+    gameObjects.clear();
 }
 
 void Game::run()
 {
     bool should_close = false;
-    window = new sf::RenderWindow(sf::VideoMode(WIDTH, HEIGHT), window_name,sf::Style::Default);
-    window->setFramerateLimit(DEFAULT_FPS);
-    graphics = new Graphics(*window);
-    GameObject o;
+    init();
+    GameObject o = *new GameObject;
     graphics->createTexture("triangle.png", o);
+    o.scale(2.f, 2.f);
+    o.setOrigin(16,16);
+    o.setPosition(WIDTH/2, HEIGHT-o.getLocalBounds().height);
     gameObjects.push_back(o);
-//    sf::CircleShape shape(100.f);
-//    shape.setFillColor(sf::Color::Green);
+    sf::Clock clock;
+    sf::Time deltaTime;
+    player = &gameObjects[0];
     while(window->isOpen())
     {
+        deltaTime = clock.getElapsedTime();
+        clock.restart();
+        handleKeys(*player, deltaTime);
         sf::Event event;
         while(window->pollEvent(event))
         {
             switch(event.type)
             {
                 case sf::Event::Closed:
-                    cleanup();
                     window->close();
                     should_close = true;
                     break;
@@ -40,13 +43,8 @@ void Game::run()
         }
         if(!should_close)
             graphics->render(gameObjects);
-//        window->clear(sf::Color::Black);
-
-//        //draw
-//        window->draw(shape);
-
-//        window->display();
     }
+    cleanup();
 }
 
 void Game::cleanup()
@@ -59,3 +57,29 @@ void Game::addGameObject(GameObject &object)
 {
     gameObjects.push_back(object);
 }
+
+void Game::init()
+{
+    window = new sf::RenderWindow(sf::VideoMode(WIDTH, HEIGHT), window_name, sf::Style::Close | sf::Style::Titlebar);
+    window->setFramerateLimit(DEFAULT_FPS);
+    graphics = new Graphics(*window);
+}
+
+void Game::handleKeys(GameObject &player, sf::Time elapsedTime)
+{
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    {
+        if(player.getPosition().x >= 16)
+            player.updatePosition(-MOVE_SPEED, elapsedTime);
+    }
+    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+    {
+        if(player.getPosition().x <= WIDTH)
+            player.updatePosition(MOVE_SPEED, elapsedTime);
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    {
+        //shoot
+    }
+}
+
