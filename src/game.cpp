@@ -69,12 +69,12 @@ void Game::handleKeys(GameObject &player, sf::Time elapsedTime)
 {
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
-        if(player.getPosition().x >= 16)
+        if(player.getPosition().x >= 18)
             player.updatePosition(-MOVE_SPEED, elapsedTime);
     }
     else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
-        if(player.getPosition().x <= WIDTH)
+        if(player.getPosition().x <= WIDTH-20)
             player.updatePosition(MOVE_SPEED, elapsedTime);
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Mouse::isButtonPressed(sf::Mouse::Left))
