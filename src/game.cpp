@@ -65,21 +65,31 @@ void Game::init()
     graphics = new Graphics(*window);
 }
 
-void Game::handleKeys(GameObject &player, sf::Time elapsedTime)
+void Game::handleKeys(GameObject& player, sf::Time elapsedTime)
 {
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-    {
-        if(player.getPosition().x >= 18)
-            player.updatePosition(-MOVE_SPEED, elapsedTime);
-    }
-    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-    {
-        if(player.getPosition().x <= WIDTH-20)
-            player.updatePosition(MOVE_SPEED, elapsedTime);
-    }
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Mouse::isButtonPressed(sf::Mouse::Left))
-    {
-        //shoot
-    }
-}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		if (player.getPosition().x >= 15) {
+			player.updatePosition(-MOVE_SPEED, elapsedTime);
 
+			if (player.getPosition().x < 15)
+				player.setPosition(15, player.getPosition().y);
+		}
+
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		if (player.getPosition().x <= WIDTH - 16) {
+			player.updatePosition(MOVE_SPEED, elapsedTime);
+
+			if (player.getPosition().x > WIDTH - 16) {
+				player.setPosition(WIDTH - 16, player.getPosition().y);
+			}
+
+		}
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		//shoot
+	}
+}
