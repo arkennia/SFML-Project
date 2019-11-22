@@ -1,5 +1,6 @@
 #include "game.h"
 #include "graphics.h"
+
 Game::Game()
 {
 
@@ -95,5 +96,16 @@ void Game::handleKeys(GameObject& player, sf::Time elapsedTime)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
 		//shoot
+
+		Projectile p = * new Projectile;
+
+		p.setVel(MOVE_SPEED);
+		p.setDmg(1);
+
+		graphics->createTexture("triangle.png", p);
+		p.scale(1.f, 1.f);
+		p.setOrigin(16, 16);
+		p.setPosition(player.getPosition());
+		gameObjects.push_back(p);
 	}
 }

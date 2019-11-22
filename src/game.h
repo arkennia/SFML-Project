@@ -10,6 +10,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include "gameobject.h"
+#include "Projectile.h"
 class Graphics;
 class Game
 {
