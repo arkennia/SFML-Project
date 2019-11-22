@@ -4,13 +4,14 @@
 #define WIDTH 640
 #define HEIGHT 860
 #define DEFAULT_FPS 60
-#define MOVE_SPEED 500
+
 
 #include <iostream>
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include "gameobject.h"
 #include "projectile.h"
+#include "player.h"
 
 class Graphics;
 class Game
@@ -35,8 +36,8 @@ private:
     sf::RenderWindow *window;
     std::vector<GameObject*> gameObjects;
     std::vector<Projectile*> projectiles;
-    GameObject *player;
-    void handleKeys(GameObject &player, sf::Time elapsedTime);
+    Player *player;
+    void handleKeys(sf::Time elapsedTime);
     void updatePositions();
 };
 

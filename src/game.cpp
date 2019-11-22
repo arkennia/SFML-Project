@@ -16,19 +16,19 @@ void Game::run()
 {
     bool should_close = false;
     init();
-    GameObject o = *new GameObject;
+    Player o = *new Player;
     graphics->createTexture("triangle.png", o);
     o.scale(2.f, 2.f);
     o.setOrigin(16,16);
     o.setPosition(WIDTH/2, HEIGHT-o.getLocalBounds().height);
     gameObjects.push_back(&o);
     sf::Clock clock;    
-    player = gameObjects[0];
+    player = &o;
     while(window->isOpen())
     {
         deltaTime = clock.getElapsedTime();
         clock.restart();
-        handleKeys(*player, deltaTime);
+        handleKeys(deltaTime);
         updatePositions();
         sf::Event event;
         while(window->pollEvent(event))
@@ -74,29 +74,29 @@ sf::Time Game::getDeltaTime()
     return deltaTime;
 }
 
-void Game::handleKeys(GameObject& player, sf::Time elapsedTime)
+void Game::handleKeys(sf::Time elapsedTime)
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-        if (player.getPosition().x >= 15)
+        if (player->getPosition().x >= 15)
         {
-            player.updatePosition(-MOVE_SPEED, 0, elapsedTime);
+            player->updatePosition(-player->getMoveSpeed(), 0, elapsedTime);
 
-			if (player.getPosition().x < 15)
+            if (player->getPosition().x < 15)
             {
-				player.setPosition(15, player.getPosition().y);
+                player->setPosition(15, player->getPosition().y);
             }
 		}
 
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-        if (player.getPosition().x <= WIDTH - 16)
+        if (player->getPosition().x <= WIDTH - 16)
         {
-            player.updatePosition(MOVE_SPEED, 0, elapsedTime);
-            if (player.getPosition().x > WIDTH - 16)
+            player->updatePosition(player->getMoveSpeed(), 0, elapsedTime);
+            if (player->getPosition().x > WIDTH - 16)
             {
-				player.setPosition(WIDTH - 16, player.getPosition().y);
+                player->setPosition(WIDTH - 16, player->getPosition().y);
 			}
 
 		}
@@ -105,15 +105,15 @@ void Game::handleKeys(GameObject& player, sf::Time elapsedTime)
 	{
 		//shoot
 
-        Projectile *p = new Projectile;
+        Projectile *p = player->shoot();
 
-        p->setVelocity(MOVE_SPEED);
-        p->setDamage(1);
+//        p->setVelocity(MOVE_SPEED);
+//        p->setDamage(1);
 
-        graphics->createTexture("triangle.png", *p);
-        p->scale(1.f, 1.f);
-        p->setOrigin(16, 16);
-        p->setPosition(player.getPosition().x, player.getPosition().y + player.getLocalBounds().height);
+//        graphics->createTexture("triangle.png", *p);
+//        p->scale(1.f, 1.f);
+//        p->setOrigin(16, 16);
+//        p->setPosition(player.getPosition().x, player.getPosition().y + player.getLocalBounds().height);
         projectiles.push_back(p);
     }
 }
