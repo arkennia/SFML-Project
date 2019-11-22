@@ -9,7 +9,7 @@ class GameObject : public sf::Sprite
 public:
     GameObject();
     void initDrawable(std::string path);
-    void updatePosition(float speed, sf::Time elapsed);
+    void updatePosition(float x_speed, float y_speed, sf::Time elapsed);
 protected:
     std::string path;
     sf::Image image;

@@ -1,5 +1,6 @@
 #include "graphics.h"
 #include "gameobject.h"
+#include "projectile.h"
 Graphics::~Graphics()
 {
     if(window)
@@ -11,12 +12,16 @@ Graphics::Graphics(sf::RenderWindow &window)
     this->window = &window;
 }
 
-void Graphics::render(const std::vector<GameObject> &objs)
+void Graphics::render(std::vector<GameObject *> &objs, std::vector<Projectile*> projectiles)
 {
     window->clear(sf::Color::Black);
     for(const auto &g : objs)
     {
-        window->draw(g);
+        window->draw(*g);
+    }
+    for (const auto & p : projectiles)
+    {
+        window->draw(*p);
     }
     window->display();
 }

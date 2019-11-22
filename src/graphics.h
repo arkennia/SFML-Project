@@ -5,13 +5,14 @@
 
 #define RESOURCEPATH "resources/"
 
+class Projectile;
 class GameObject;
 class Graphics
 {
 public:
     ~Graphics();
     Graphics(sf::RenderWindow &window);
-    void render(const std::vector<GameObject> &objs);
+    void render(std::vector<GameObject*> &objs, std::vector<Projectile *> projectiles);
     void run();
     void createTexture(std::string path, GameObject &obj);    
 

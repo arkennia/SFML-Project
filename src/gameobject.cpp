@@ -13,9 +13,9 @@ void GameObject::initDrawable(std::string path)
     this->setTexture(texture);
 }
 
-void GameObject::updatePosition(float speed, sf::Time elapsed)
+void GameObject::updatePosition(float x_speed, float y_speed, sf::Time elapsed)
 {
-    this->move(speed * elapsed.asSeconds(), 0.f);
+    this->move(x_speed * elapsed.asSeconds(), y_speed * elapsed.asSeconds());
 }
 
 
