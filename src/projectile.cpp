@@ -1,6 +1,5 @@
 #include "projectile.h"
 
-
 Projectile::Projectile()
 {
     velocity = 100;
@@ -30,7 +29,7 @@ void Projectile::updatePosition(sf::Time elapsed)
     this->move(0, -velocity * elapsed.asSeconds());
 }
 
-void Projectile::setAttackSpeed(const uint32_t &value)
+void Projectile::setAttackSpeed(const int32_t &value)
 {
     if(value > 0)
         attackSpeed = value;
@@ -41,7 +40,12 @@ int Projectile::getDamage() const
     return damage;
 }
 
-uint32_t Projectile::getAttackSpeed() const
+bool Projectile::isOffScreen()
+{
+    return this->getPosition().y < 0;
+}
+
+int32_t Projectile::getAttackSpeed() const
 {
     return attackSpeed;
 }

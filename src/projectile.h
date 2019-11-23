@@ -15,15 +15,16 @@ public:
     void setDamage(int newDmg);
     void setVelocity(float newVel);
     void updatePosition(sf::Time elapsed);
-    uint32_t getAttackSpeed() const;
-    void setAttackSpeed(const uint32_t &value);
+    int32_t getAttackSpeed() const;
+    void setAttackSpeed(const int32_t &value);
     int getDamage() const;
+    bool isOffScreen();
 
 private:
     //VariablesS
     float velocity;
     int damage;
-    uint32_t attackSpeed;
+    int32_t attackSpeed;
 };
 
 #endif 

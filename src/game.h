@@ -29,6 +29,7 @@ public:
 
 private:
     //Constants
+    bool shouldClose;
     static sf::Time deltaTime;
     const std::string window_name = "Space Shooter";
     //Game Objects
