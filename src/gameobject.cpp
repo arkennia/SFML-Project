@@ -18,5 +18,15 @@ void GameObject::updatePosition(float x_speed, float y_speed, sf::Time elapsed)
     this->move(x_speed * elapsed.asSeconds(), y_speed * elapsed.asSeconds());
 }
 
+GameObject::Type GameObject::getType() const
+{
+    return type;
+}
+
+void GameObject::setType(const Type &value)
+{
+    type = value;
+}
+
 
 

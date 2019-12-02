@@ -7,6 +7,10 @@
 class Projectile : public GameObject
 {
 public:
+    enum Owner {
+        Player,
+        Enemy
+    };
     //Constructors
     Projectile();
     ~Projectile();
@@ -20,8 +24,13 @@ public:
     int getDamage() const;
     bool isOffScreen();
 
+
+    Owner getOwner() const;
+    void setOwner(const Owner &value);
+
 private:
     //VariablesS
+    Owner o;
     float velocity;
     int damage;
     int32_t attackSpeed;

@@ -14,23 +14,24 @@ public:
     float getMoveSpeed() const;
     void setMoveSpeed(float value);
     Projectile* shoot(int32_t velocity = defaultProjectileVelocity, int32_t attackSpeed = defaultAttackSpeed);
-    uint8_t getLives() const;
-    int death();
+    uint32_t getLives() const;
+    void death();
     float getProjectileSpeed() const;
     void setProjectileSpeed(float value);
     bool canAttack();
     int getCurrentAttackSpeed() const;
     void setCurrentAttackSpeed(int value);
-    int getCurrentProjectileVelocity() const;
-    void setCurrentProjectileVelocity(int value);
+    float getCurrentProjectileVelocity() const;
+    void setCurrentProjectileVelocity(float value);
+    bool isDead();
 
-private:
+protected:
     static const int32_t defaultAttackSpeed = 300;
     static const int32_t defaultProjectileVelocity = 300;
     int currentAttackSpeed;
-    int currentProjectileVelocity;
+    float currentProjectileVelocity;
     const std::string projectile_path = "triangle.png";
-    uint8_t lives;
+    uint32_t lives;
     float moveSpeed;
     float projectileSpeed;
     sf::Clock attackClock;

@@ -1,5 +1,6 @@
 #include "game.h"
 #include "graphics.h"
+#include "enemy.h"
 
 sf::Time Game::deltaTime = sf::Time::Zero;
 Game::Game()
@@ -9,12 +10,14 @@ Game::Game()
 
 Game::~Game()
 {
-    gameObjects.clear();
+    if(graphics)
+        delete graphics;
 }
 
 void Game::run()
 {
     shouldClose = false;
+    gameOver = false;
     init();
     Player o = *new Player;
     graphics->createTexture("triangle.png", o);
@@ -22,6 +25,7 @@ void Game::run()
     o.setOrigin(16,16);
     o.setPosition(WIDTH/2, HEIGHT-o.getLocalBounds().height);
     gameObjects.push_back(&o);
+    createEnemies(1, 500, 1000, 300, 1, "enemy.png");    
     sf::Clock clock;    
     player = &o;
     while(window->isOpen())
@@ -29,7 +33,13 @@ void Game::run()
         deltaTime = clock.getElapsedTime();
         clock.restart();
         handleKeys(deltaTime);
-        updatePositions();
+        checkCollisions();
+        updateGameObjects();
+        if(gameOver)
+        {
+            std::cerr << "Game over!" << std::endl;
+            gameObjects.erase(gameObjects.begin());
+        }
         sf::Event event;
         while(window->pollEvent(event))
         {
@@ -45,7 +55,7 @@ void Game::run()
             if(shouldClose)
             {
                 window->close();
-            }
+            }            
         }
         if(!shouldClose)
         {
@@ -57,8 +67,8 @@ void Game::run()
 
 void Game::cleanup()
 {
-    if(graphics)
-        delete graphics;
+    gameObjects.clear();
+    projectiles.clear();
 }
 
 void Game::addGameObject(GameObject &object)
@@ -126,8 +136,13 @@ void Game::handleKeys(sf::Time elapsedTime)
     }
 }
 
-void Game::updatePositions()
+void Game::updateGameObjects()
 {
+    if(player->isDead())
+    {
+        gameOver = true;
+        return;
+    }
     for(Projectile *p: projectiles)
     {
         p->updatePosition(deltaTime);
@@ -136,4 +151,73 @@ void Game::updatePositions()
             projectiles.erase(projectiles.begin());
         }
     }
+    Enemy *e;
+    for(size_t i = 1; i < gameObjects.size(); i++)
+    {
+        e = reinterpret_cast<Enemy*>(gameObjects[i]);
+        if(e->isDead() == false)
+        {
+        Projectile* p = e->shoot(e->getProjectileSpeed(), e->getCurrentAttackSpeed());
+        if(p != NULL)
+            projectiles.push_back(p);
+        }
+        else gameObjects.erase(gameObjects.begin() + i);
+    }
 }
+
+void Game::createEnemies(uint32_t quantity, int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives, std::string texture_path)
+{
+    Enemy *e;
+    for(size_t i = 0; i < quantity; i++)
+    {
+        e = createEnemy(moveSpeed, attackSpeed, projectileSpeed, lives);
+        graphics->createTexture(texture_path,  *e);
+        gameObjects.push_back(e);
+    }
+}
+
+Enemy *Game::createEnemy(int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives)
+{
+    Enemy *e = new Enemy;
+    e->setLives(lives);
+    e->setProjectileSpeed(projectileSpeed);
+    e->setCurrentAttackSpeed(attackSpeed);
+    e->setMoveSpeed(moveSpeed);
+    return e;
+}
+
+void Game::checkCollisions()
+{
+
+    for(auto &gameO : gameObjects)
+    {
+        for(size_t i = 0; i < projectiles.size(); i++)
+        {
+            if(projectiles[i]->getGlobalBounds().intersects(gameO->getGlobalBounds()))
+            {
+                if(projectiles[i]->getOwner() == Projectile::Player)
+                {
+                    if(gameO->getType() == GameObject::EPC)
+                    {
+                        Enemy *e = reinterpret_cast<Enemy*>(gameO);
+                        e->takeDamage(projectiles[i]->getDamage());
+                        projectiles.erase(projectiles.begin() + i);
+                    }
+                }
+                else if(projectiles[i]->getOwner() == Projectile::Enemy)
+                {
+                    if(projectiles[i]->getOwner() == Projectile::Enemy)
+                    {
+                        if(gameO->getType() == GameObject::PC)
+                        {
+                            Player *p = reinterpret_cast<Player*>(gameO);
+                            p->death();
+                            projectiles.erase(projectiles.begin() + i);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

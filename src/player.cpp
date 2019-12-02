@@ -7,6 +7,8 @@ Player::Player()
     attack = true;
     attackClock.restart();
     currentAttackSpeed = defaultAttackSpeed;
+    lives = 1;
+    setType(PC);
 }
 
 Player::~Player()
@@ -39,21 +41,21 @@ Projectile *Player::shoot(int32_t velocity, int32_t attackSpeed)
         p->scale(1.f, 1.f);
         p->setOrigin(16, 16);
         p->setPosition(this->getPosition().x, this->getPosition().y - this->getLocalBounds().height/2);
+        p->setOwner(Projectile::Player);
         attackClock.restart();
         return p;
     }
     else return NULL;
 }
 
-uint8_t Player::getLives() const
+uint32_t Player::getLives() const
 {
     return lives;
 }
 
-int Player::death()
+void Player::death()
 {
     lives--;
-    return lives;
 }
 
 float Player::getProjectileSpeed() const
@@ -82,15 +84,20 @@ void Player::setCurrentAttackSpeed(int value)
         currentAttackSpeed = value;
 }
 
-int Player::getCurrentProjectileVelocity() const
+float Player::getCurrentProjectileVelocity() const
 {
     return currentProjectileVelocity;
 }
 
-void Player::setCurrentProjectileVelocity(int value)
+void Player::setCurrentProjectileVelocity(float value)
 {
     if(value > 0)
         currentProjectileVelocity = value;
+}
+
+bool Player::isDead()
+{
+    return lives <= 0;
 }
 
 

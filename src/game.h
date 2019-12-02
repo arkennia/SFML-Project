@@ -14,6 +14,7 @@
 #include "player.h"
 
 class Graphics;
+class Enemy;
 class Game
 {
 public:
@@ -30,6 +31,7 @@ public:
 private:
     //Constants
     bool shouldClose;
+    bool gameOver;
     static sf::Time deltaTime;
     const std::string window_name = "Space Shooter";
     //Game Objects
@@ -39,7 +41,11 @@ private:
     std::vector<Projectile*> projectiles;
     Player *player;
     void handleKeys(sf::Time elapsedTime);
-    void updatePositions();
+    void updateGameObjects();
+    void createEnemies(uint32_t quantity, int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives, std::string texture_path);
+    Enemy *createEnemy(int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives);
+    void enemyAttack();
+    void checkCollisions();
 };
 
 #endif // GAME_H
