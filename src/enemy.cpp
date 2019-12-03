@@ -1,7 +1,7 @@
 #include "enemy.h"
 #include "projectile.h"
 #include "game.h"
-Enemy::Enemy()
+Enemy::Enemy() : Player()
 {
     spawnPoint = sf::Vector2f(WIDTH/2, HEIGHT /2);
     this->setPosition(spawnPoint);

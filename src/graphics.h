@@ -12,7 +12,7 @@ class Graphics
 public:
     ~Graphics();
     Graphics(sf::RenderWindow &window);
-    void render(std::vector<GameObject*> &objs, std::vector<Projectile *> projectiles);
+    void render(std::vector<GameObject*> &objs, std::vector<Projectile *> projectiles, GameObject *background);
     void run();
     void createTexture(std::string path, GameObject &obj);    
 

@@ -1,6 +1,7 @@
 #include "game.h"
 #include "graphics.h"
 #include "enemy.h"
+#include <cstring>
 
 sf::Time Game::deltaTime = sf::Time::Zero;
 Game::Game()
@@ -12,6 +13,8 @@ Game::~Game()
 {
     if(graphics)
         delete graphics;
+    if(background)
+        delete background;
 }
 
 void Game::run()
@@ -25,9 +28,11 @@ void Game::run()
     o.setOrigin(16,16);
     o.setPosition(WIDTH/2, HEIGHT-o.getLocalBounds().height);
     gameObjects.push_back(&o);
+    background = new GameObject(GameObject::Other);
+    background->loadImages("resources/starBackground", ".png", 3);
     createEnemies(1, 500, 1000, 300, 1, "enemy.png");    
     sf::Clock clock;    
-    player = &o;
+    player = &o;    
     while(window->isOpen())
     {
         deltaTime = clock.getElapsedTime();
@@ -38,7 +43,9 @@ void Game::run()
         if(gameOver)
         {
             std::cerr << "Game over!" << std::endl;
-            gameObjects.erase(gameObjects.begin());
+            gameObjects.clear();
+            projectiles.clear();
+            gameOver = false;
         }
         sf::Event event;
         while(window->pollEvent(event))
@@ -59,7 +66,7 @@ void Game::run()
         }
         if(!shouldClose)
         {
-            graphics->render(gameObjects, projectiles);
+            graphics->render(gameObjects, projectiles, background);
         }
     }
     cleanup();
@@ -122,15 +129,7 @@ void Game::handleKeys(sf::Time elapsedTime)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
 		//shoot
-
         Projectile *p = player->shoot();
-//        p->setVelocity(MOVE_SPEED);
-//        p->setDamage(1);
-
-//        graphics->createTexture("triangle.png", *p);
-//        p->scale(1.f, 1.f);
-//        p->setOrigin(16, 16);
-//        p->setPosition(player.getPosition().x, player.getPosition().y + player.getLocalBounds().height);
         if(p != NULL)
             projectiles.push_back(p);
     }
@@ -138,9 +137,10 @@ void Game::handleKeys(sf::Time elapsedTime)
 
 void Game::updateGameObjects()
 {
-    if(player->isDead())
+    if(player->isDead() && player->isEnabled())
     {
         gameOver = true;
+        player->disable();
         return;
     }
     for(Projectile *p: projectiles)

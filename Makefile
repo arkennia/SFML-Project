@@ -52,16 +52,14 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = src/animator.cpp \
-		src/enemy.cpp \
+SOURCES       = src/enemy.cpp \
 		src/game.cpp \
 		src/gameobject.cpp \
 		src/graphics.cpp \
 		src/main.cpp \
 		src/player.cpp \
 		src/projectile.cpp 
-OBJECTS       = animator.o \
-		enemy.o \
+OBJECTS       = enemy.o \
 		game.o \
 		gameobject.o \
 		graphics.o \
@@ -264,14 +262,12 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/features/exceptions.prf \
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
-		SFML-Project.pro src/animator.h \
-		src/enemy.h \
+		SFML-Project.pro src/enemy.h \
 		src/game.h \
 		src/gameobject.h \
 		src/graphics.h \
 		src/player.h \
-		src/projectile.h src/animator.cpp \
-		src/enemy.cpp \
+		src/projectile.h src/enemy.cpp \
 		src/game.cpp \
 		src/gameobject.cpp \
 		src/graphics.cpp \
@@ -727,9 +723,6 @@ compiler_clean:
 
 ####### Compile
 
-animator.o: src/animator.cpp src/animator.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o animator.o src/animator.cpp
-
 enemy.o: src/enemy.cpp src/enemy.h \
 		src/player.h \
 		src/gameobject.h \
@@ -808,7 +801,8 @@ enemy.o: src/enemy.cpp src/enemy.h \
 		include/SFML/Graphics/Sprite.hpp \
 		include/SFML/Graphics/Text.hpp \
 		include/SFML/Graphics/VertexBuffer.hpp \
-		src/projectile.h
+		src/projectile.h \
+		src/game.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o enemy.o src/enemy.cpp
 
 game.o: src/game.cpp src/game.h \
@@ -1287,7 +1281,9 @@ projectile.o: src/projectile.cpp src/projectile.h \
 		include/SFML/Graphics/Glsl.inl \
 		include/SFML/Graphics/Sprite.hpp \
 		include/SFML/Graphics/Text.hpp \
-		include/SFML/Graphics/VertexBuffer.hpp
+		include/SFML/Graphics/VertexBuffer.hpp \
+		src/game.h \
+		src/player.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o projectile.o src/projectile.cpp
 
 ####### Install

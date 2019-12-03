@@ -1,7 +1,7 @@
 #include "player.h"
 #include "projectile.h"
 
-Player::Player()
+Player::Player() : GameObject()
 {
     this->moveSpeed = MOVE_SPEED;
     attack = true;
@@ -70,7 +70,7 @@ void Player::setProjectileSpeed(float value)
 
 bool Player::canAttack()
 {
-    return attackClock.getElapsedTime().asMilliseconds() >= currentAttackSpeed;
+    return attackClock.getElapsedTime().asMilliseconds() >= currentAttackSpeed && enabled;
 }
 
 int Player::getCurrentAttackSpeed() const

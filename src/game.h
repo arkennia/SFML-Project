@@ -40,6 +40,7 @@ private:
     std::vector<GameObject*> gameObjects;
     std::vector<Projectile*> projectiles;
     Player *player;
+    GameObject *background;
     void handleKeys(sf::Time elapsedTime);
     void updateGameObjects();
     void createEnemies(uint32_t quantity, int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives, std::string texture_path);
