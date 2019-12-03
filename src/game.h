@@ -57,6 +57,7 @@ private:
     sf::Text *score;
     int scoreNum;
     int fireChance;
+    sf::Text *gameDone;
 };
 
 #endif // GAME_H
