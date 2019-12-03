@@ -73,7 +73,7 @@ void GameObject::animate()
 {
     if(!textures->empty())
     {
-        if(animClock.getElapsedTime().asSeconds() >= animationSpeed)
+        if(animClock.getElapsedTime().asSeconds() >= this->animationSpeed)
         {
             animClock.restart();
             if(currentImage + 1 == numImages)
