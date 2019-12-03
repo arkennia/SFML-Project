@@ -8,6 +8,7 @@ Enemy::Enemy() : Player()
     setOrigin(16,16);
     scale(2.f, 2.f);
     setType(EPC);
+    scoreValue = 10;
 }
 
 Enemy::~Enemy()
@@ -61,5 +62,15 @@ sf::Vector2f Enemy::getSpawnPoint() const
 void Enemy::setSpawnPoint(const sf::Vector2f &value)
 {
     spawnPoint = value;
+}
+
+int Enemy::getScoreValue() const
+{
+    return scoreValue;
+}
+
+void Enemy::setScoreValue(int value)
+{
+    scoreValue = value;
 }
 

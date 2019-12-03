@@ -47,6 +47,11 @@ private:
     Enemy *createEnemy(int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives);
     void enemyAttack();
     void checkCollisions();
+    void initText();
+
+    sf::Font font;
+    sf::Text score;
+    int scoreNum;
 };
 
 #endif // GAME_H

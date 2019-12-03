@@ -17,8 +17,12 @@ public:
     sf::Vector2f getSpawnPoint() const;
     void setSpawnPoint(const sf::Vector2f &value);
 
+    int getScoreValue() const;
+    void setScoreValue(int value);
+
 private:
     sf::Vector2f spawnPoint;
+    int scoreValue;
 };
 
 #endif // ENEMY_H

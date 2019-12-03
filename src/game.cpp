@@ -6,7 +6,7 @@
 sf::Time Game::deltaTime = sf::Time::Zero;
 Game::Game()
 {
-
+    scoreNum = 0;
 }
 
 Game::~Game()
@@ -22,6 +22,7 @@ void Game::run()
     shouldClose = false;
     gameOver = false;
     init();
+    initText();
     Player o = *new Player;
     graphics->createTexture("triangle.png", o);
     o.scale(2.f, 2.f);
@@ -143,12 +144,12 @@ void Game::updateGameObjects()
         player->disable();
         return;
     }
-    for(Projectile *p: projectiles)
+    for(size_t i = 0; i < projectiles.size(); i++)
     {
-        p->updatePosition(deltaTime);
-        if(p->isOffScreen())
+        projectiles[i]->updatePosition(deltaTime);
+        if(projectiles[i]->isOffScreen())
         {
-            projectiles.erase(projectiles.begin());
+            projectiles.erase(projectiles.begin() + i);
         }
     }
     Enemy *e;
@@ -157,11 +158,15 @@ void Game::updateGameObjects()
         e = reinterpret_cast<Enemy*>(gameObjects[i]);
         if(e->isDead() == false)
         {
-        Projectile* p = e->shoot(e->getProjectileSpeed(), e->getCurrentAttackSpeed());
-        if(p != NULL)
-            projectiles.push_back(p);
+            Projectile* p = e->shoot(e->getProjectileSpeed(), e->getCurrentAttackSpeed());
+            if(p != NULL)
+                projectiles.push_back(p);
         }
-        else gameObjects.erase(gameObjects.begin() + i);
+        else
+        {
+            scoreNum += e->getScoreValue();
+            gameObjects.erase(gameObjects.begin() + i);
+        }
     }
 }
 
@@ -219,5 +224,11 @@ void Game::checkCollisions()
             }
         }
     }
+}
+
+void Game::initText()
+{
+    font.loadFromFile("resources/PLANK___.TTF");
+    score.setFont(font);
 }
 
