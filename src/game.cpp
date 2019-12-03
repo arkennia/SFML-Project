@@ -24,6 +24,9 @@ Game::~Game()
         delete font;
 }
 
+/*
+ *  Runs the game. Checks for collisions, handles key pushs, spawns enemies once per frame.
+ */
 void Game::run()
 {
     srand(std::time(0));
@@ -54,7 +57,7 @@ void Game::run()
             std::cerr << "Game over!" << std::endl;
             gameObjects.clear();
             projectiles.clear();
-            gameOver = false;
+            texts.push_back(gameDone);
         }
         else spawnEnemy();
         sf::Event event;
@@ -82,18 +85,28 @@ void Game::run()
     }
     cleanup();
 }
-
+/*
+ * Clean up the two vectors
+ */
 void Game::cleanup()
 {
     gameObjects.clear();
     projectiles.clear();
+    texts.clear();
 }
 
+
+/*
+ * Adds a game object...a bit redundant
+ */
 void Game::addGameObject(GameObject &object)
 {
     gameObjects.push_back(&object);
 }
 
+/*
+ * Create the window and pass it to the graphics module
+ */
 void Game::init()
 {
     window = new sf::RenderWindow(sf::VideoMode(WIDTH, HEIGHT), window_name, sf::Style::Close | sf::Style::Titlebar);
@@ -101,11 +114,20 @@ void Game::init()
     graphics = new Graphics(*window);
 }
 
+/*
+ *  Returns the time since last frame
+ */
 sf::Time Game::getDeltaTime()
 {
     return deltaTime;
 }
 
+
+/*
+ * Handles key input
+ * Shoot: Click, Space
+ * Move WASD/Arrow keys
+ */
 void Game::handleKeys(sf::Time elapsedTime)
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
@@ -146,6 +168,11 @@ void Game::handleKeys(sf::Time elapsedTime)
     }
 }
 
+/*
+ * Checks if player is dead, return if true
+ * Update the position of the projectiles and check if they are offscreen
+ * Enemies shoot
+ */
 void Game::updateGameObjects()
 {
     if(player->isDead() && player->isEnabled())
@@ -184,19 +211,25 @@ void Game::updateGameObjects()
     }
 }
 
+/*
+ * Create enemies at a random position
+ */
 void Game::createEnemies(uint32_t quantity, int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives, std::string texture_path)
 {
     Enemy *e;
     for(size_t i = 0; i < quantity; i++)
     {
         e = createEnemy(moveSpeed, attackSpeed, projectileSpeed, lives);
-        e->setPosition(random() % WIDTH, random() % (HEIGHT - 300));
+        e->setPosition(rand() % WIDTH, rand() % (HEIGHT - 300));
         graphics->createTexture(texture_path,  *e);
         e->setOrigin(e->getLocalBounds().width/2 ,e->getLocalBounds().height/2);
         gameObjects.push_back(e);
     }
 }
 
+/*
+ * Create a single enemy
+ */
 Enemy *Game::createEnemy(int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives)
 {
     Enemy *e = new Enemy;    
@@ -207,6 +240,9 @@ Enemy *Game::createEnemy(int32_t moveSpeed, int32_t attackSpeed, uint32_t projec
     return e;
 }
 
+/*
+ * Check the collisios by looking at the bounding boxes of the textures. Normally this wouldn't work...
+ */
 void Game::checkCollisions()
 {
 
@@ -248,6 +284,11 @@ void Game::initText()
     score->setCharacterSize(24);
     score->setFillColor(sf::Color::White);
     texts.push_back(score);
+    gameDone = new sf::Text;
+    gameDone->setString("Game Over! :(");
+    gameDone->setFont(*font);
+    gameDone->setCharacterSize(64);
+    gameDone->setPosition(0, HEIGHT/2);
 }
 
 void Game::spawnEnemy()
