@@ -12,7 +12,8 @@ class Graphics
 public:
     ~Graphics();
     Graphics(sf::RenderWindow &window);
-    void render(std::vector<GameObject*> &objs, std::vector<Projectile *> projectiles, GameObject *background);
+    void render(std::vector<GameObject*> &objs, std::vector<Projectile *> projectiles, GameObject *background, std::vector<sf::Text *> texts);
+    void render(sf::Text &text);
     void run();
     void createTexture(std::string path, GameObject &obj);    
 

@@ -39,6 +39,7 @@ private:
     sf::RenderWindow *window;
     std::vector<GameObject*> gameObjects;
     std::vector<Projectile*> projectiles;
+    std::vector<sf::Text *> texts;
     Player *player;
     GameObject *background;
     void handleKeys(sf::Time elapsedTime);
@@ -48,10 +49,14 @@ private:
     void enemyAttack();
     void checkCollisions();
     void initText();
+    void spawnEnemy();
 
-    sf::Font font;
-    sf::Text score;
+    sf::Clock spawnTimer;
+    int spawnSpeed = 4;
+    sf::Font *font;
+    sf::Text *score;
     int scoreNum;
+    int fireChance;
 };
 
 #endif // GAME_H

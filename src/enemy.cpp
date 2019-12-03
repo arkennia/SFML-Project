@@ -5,7 +5,7 @@ Enemy::Enemy() : Player()
 {
     spawnPoint = sf::Vector2f(WIDTH/2, HEIGHT /2);
     this->setPosition(spawnPoint);
-    setOrigin(16,16);
+    setOrigin(getLocalBounds().width/2, getLocalBounds().height/2);
     scale(2.f, 2.f);
     setType(EPC);
     scoreValue = 10;

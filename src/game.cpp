@@ -2,11 +2,14 @@
 #include "graphics.h"
 #include "enemy.h"
 #include <cstring>
+#include <random>
+#include <thread>
 
 sf::Time Game::deltaTime = sf::Time::Zero;
 Game::Game()
 {
     scoreNum = 0;
+    spawnTimer.restart();
 }
 
 Game::~Game()
@@ -15,10 +18,15 @@ Game::~Game()
         delete graphics;
     if(background)
         delete background;
+    if(score)
+        delete score;
+    if(font)
+        delete font;
 }
 
 void Game::run()
 {
+    srand(std::time(0));
     shouldClose = false;
     gameOver = false;
     init();
@@ -26,7 +34,7 @@ void Game::run()
     Player o = *new Player;
     graphics->createTexture("triangle.png", o);
     o.scale(2.f, 2.f);
-    o.setOrigin(16,16);
+    o.setOrigin(o.getLocalBounds().width/2,o.getLocalBounds().height/2);
     o.setPosition(WIDTH/2, HEIGHT-o.getLocalBounds().height);
     gameObjects.push_back(&o);
     background = new GameObject(GameObject::Other);
@@ -48,6 +56,7 @@ void Game::run()
             projectiles.clear();
             gameOver = false;
         }
+        else spawnEnemy();
         sf::Event event;
         while(window->pollEvent(event))
         {
@@ -67,7 +76,8 @@ void Game::run()
         }
         if(!shouldClose)
         {
-            graphics->render(gameObjects, projectiles, background);
+            score->setString("Score: " + std::to_string(scoreNum));
+            graphics->render(gameObjects, projectiles, background, texts);
         }
     }
     cleanup();
@@ -155,12 +165,16 @@ void Game::updateGameObjects()
     Enemy *e;
     for(size_t i = 1; i < gameObjects.size(); i++)
     {
+        fireChance = rand() % 50 + 1;
         e = reinterpret_cast<Enemy*>(gameObjects[i]);
         if(e->isDead() == false)
         {
-            Projectile* p = e->shoot(e->getProjectileSpeed(), e->getCurrentAttackSpeed());
-            if(p != NULL)
-                projectiles.push_back(p);
+            if(fireChance == 20)
+            {
+                Projectile* p = e->shoot(e->getProjectileSpeed(), e->getCurrentAttackSpeed());
+                if(p != NULL)
+                    projectiles.push_back(p);
+            }
         }
         else
         {
@@ -176,14 +190,16 @@ void Game::createEnemies(uint32_t quantity, int32_t moveSpeed, int32_t attackSpe
     for(size_t i = 0; i < quantity; i++)
     {
         e = createEnemy(moveSpeed, attackSpeed, projectileSpeed, lives);
+        e->setPosition(random() % WIDTH, random() % (HEIGHT - 300));
         graphics->createTexture(texture_path,  *e);
+        e->setOrigin(e->getLocalBounds().width/2 ,e->getLocalBounds().height/2);
         gameObjects.push_back(e);
     }
 }
 
 Enemy *Game::createEnemy(int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives)
 {
-    Enemy *e = new Enemy;
+    Enemy *e = new Enemy;    
     e->setLives(lives);
     e->setProjectileSpeed(projectileSpeed);
     e->setCurrentAttackSpeed(attackSpeed);
@@ -210,15 +226,12 @@ void Game::checkCollisions()
                     }
                 }
                 else if(projectiles[i]->getOwner() == Projectile::Enemy)
-                {
-                    if(projectiles[i]->getOwner() == Projectile::Enemy)
+                {                   
+                    if(gameO->getType() == GameObject::PC)
                     {
-                        if(gameO->getType() == GameObject::PC)
-                        {
-                            Player *p = reinterpret_cast<Player*>(gameO);
-                            p->death();
-                            projectiles.erase(projectiles.begin() + i);
-                        }
+                        Player *p = reinterpret_cast<Player*>(gameO);
+                        p->death();
+                        projectiles.erase(projectiles.begin() + i);
                     }
                 }
             }
@@ -228,7 +241,21 @@ void Game::checkCollisions()
 
 void Game::initText()
 {
-    font.loadFromFile("resources/PLANK___.TTF");
-    score.setFont(font);
+    font = new sf::Font;
+    score = new sf::Text;
+    font->loadFromFile("resources/PLANK___.TTF");
+    score->setFont(*font);
+    score->setCharacterSize(24);
+    score->setFillColor(sf::Color::White);
+    texts.push_back(score);
+}
+
+void Game::spawnEnemy()
+{
+    if(spawnTimer.getElapsedTime().asSeconds() >= spawnSpeed)
+    {
+        createEnemies(1, 300, 1000, 200, 1, "enemy.png");
+        spawnTimer.restart();
+    }
 }
 
