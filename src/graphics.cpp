@@ -12,7 +12,7 @@ Graphics::Graphics(sf::RenderWindow &window)
     this->window = &window;
 }
 
-void Graphics::render(std::vector<GameObject *> &objs, std::vector<Projectile*> projectiles, GameObject *background)
+void Graphics::render(std::vector<GameObject *> &objs, std::vector<Projectile*> projectiles, GameObject *background, std::vector<sf::Text *> texts)
 {
     window->clear(sf::Color::Black);
     background->animate();//draw background first
@@ -30,7 +30,16 @@ void Graphics::render(std::vector<GameObject *> &objs, std::vector<Projectile*> 
         if(g->isEnabled())
             window->draw(*g);
     }
+    for (const auto & t : texts)
+    {
+        window->draw(*t);
+    }
     window->display();
+}
+
+void Graphics::render(sf::Text &text)
+{
+    window->draw(text);
 }
 
 void Graphics::createTexture(std::string path, GameObject &obj)
