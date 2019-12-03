@@ -1,6 +1,9 @@
 #include "game.h"
 #include "graphics.h"
+#include "enemy.h"
+#include <cstring>
 
+sf::Time Game::deltaTime = sf::Time::Zero;
 Game::Game()
 {
 
@@ -8,27 +11,42 @@ Game::Game()
 
 Game::~Game()
 {
-    gameObjects.clear();
+    if(graphics)
+        delete graphics;
+    if(background)
+        delete background;
 }
 
 void Game::run()
 {
-    bool should_close = false;
+    shouldClose = false;
+    gameOver = false;
     init();
-    GameObject o = *new GameObject;
+    Player o = *new Player;
     graphics->createTexture("triangle.png", o);
     o.scale(2.f, 2.f);
     o.setOrigin(16,16);
     o.setPosition(WIDTH/2, HEIGHT-o.getLocalBounds().height);
-    gameObjects.push_back(o);
-    sf::Clock clock;
-    sf::Time deltaTime;
-    player = &gameObjects[0];
+    gameObjects.push_back(&o);
+    background = new GameObject(GameObject::Other);
+    background->loadImages("resources/starBackground", ".png", 3);
+    createEnemies(1, 500, 1000, 300, 1, "enemy.png");    
+    sf::Clock clock;    
+    player = &o;    
     while(window->isOpen())
     {
         deltaTime = clock.getElapsedTime();
         clock.restart();
-        handleKeys(*player, deltaTime);
+        handleKeys(deltaTime);
+        checkCollisions();
+        updateGameObjects();
+        if(gameOver)
+        {
+            std::cerr << "Game over!" << std::endl;
+            gameObjects.clear();
+            projectiles.clear();
+            gameOver = false;
+        }
         sf::Event event;
         while(window->pollEvent(event))
         {
@@ -36,27 +54,33 @@ void Game::run()
             {
                 case sf::Event::Closed:
                     window->close();
-                    should_close = true;
+                    shouldClose = true;
                     break;
                 default:
                     break;
             }
+            if(shouldClose)
+            {
+                window->close();
+            }            
         }
-        if(!should_close)
-            graphics->render(gameObjects);
+        if(!shouldClose)
+        {
+            graphics->render(gameObjects, projectiles, background);
+        }
     }
     cleanup();
 }
 
 void Game::cleanup()
 {
-    if(graphics)
-        delete graphics;
+    gameObjects.clear();
+    projectiles.clear();
 }
 
 void Game::addGameObject(GameObject &object)
 {
-    gameObjects.push_back(object);
+    gameObjects.push_back(&object);
 }
 
 void Game::init()
@@ -66,21 +90,134 @@ void Game::init()
     graphics = new Graphics(*window);
 }
 
-void Game::handleKeys(GameObject &player, sf::Time elapsedTime)
+sf::Time Game::getDeltaTime()
 {
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    return deltaTime;
+}
+
+void Game::handleKeys(sf::Time elapsedTime)
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+        if (player->getPosition().x >= 15)
+        {
+            player->updatePosition(-player->getMoveSpeed(), 0, elapsedTime);
+
+            if (player->getPosition().x < 15)
+            {
+                player->setPosition(15, player->getPosition().y);
+            }
+		}
+
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+        if (player->getPosition().x <= WIDTH - 16)
+        {
+            player->updatePosition(player->getMoveSpeed(), 0, elapsedTime);
+            if (player->getPosition().x > WIDTH - 16)
+            {
+                player->setPosition(WIDTH - 16, player->getPosition().y);
+			}
+
+		}
+	}
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
     {
-        if(player.getPosition().x >= 18)
-            player.updatePosition(-MOVE_SPEED, elapsedTime);
+        shouldClose = true;
     }
-    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-    {
-        if(player.getPosition().x <= WIDTH-20)
-            player.updatePosition(MOVE_SPEED, elapsedTime);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		//shoot
+        Projectile *p = player->shoot();
+        if(p != NULL)
+            projectiles.push_back(p);
     }
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Mouse::isButtonPressed(sf::Mouse::Left))
+}
+
+void Game::updateGameObjects()
+{
+    if(player->isDead() && player->isEnabled())
     {
-        //shoot
+        gameOver = true;
+        player->disable();
+        return;
+    }
+    for(Projectile *p: projectiles)
+    {
+        p->updatePosition(deltaTime);
+        if(p->isOffScreen())
+        {
+            projectiles.erase(projectiles.begin());
+        }
+    }
+    Enemy *e;
+    for(size_t i = 1; i < gameObjects.size(); i++)
+    {
+        e = reinterpret_cast<Enemy*>(gameObjects[i]);
+        if(e->isDead() == false)
+        {
+        Projectile* p = e->shoot(e->getProjectileSpeed(), e->getCurrentAttackSpeed());
+        if(p != NULL)
+            projectiles.push_back(p);
+        }
+        else gameObjects.erase(gameObjects.begin() + i);
+    }
+}
+
+void Game::createEnemies(uint32_t quantity, int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives, std::string texture_path)
+{
+    Enemy *e;
+    for(size_t i = 0; i < quantity; i++)
+    {
+        e = createEnemy(moveSpeed, attackSpeed, projectileSpeed, lives);
+        graphics->createTexture(texture_path,  *e);
+        gameObjects.push_back(e);
+    }
+}
+
+Enemy *Game::createEnemy(int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives)
+{
+    Enemy *e = new Enemy;
+    e->setLives(lives);
+    e->setProjectileSpeed(projectileSpeed);
+    e->setCurrentAttackSpeed(attackSpeed);
+    e->setMoveSpeed(moveSpeed);
+    return e;
+}
+
+void Game::checkCollisions()
+{
+
+    for(auto &gameO : gameObjects)
+    {
+        for(size_t i = 0; i < projectiles.size(); i++)
+        {
+            if(projectiles[i]->getGlobalBounds().intersects(gameO->getGlobalBounds()))
+            {
+                if(projectiles[i]->getOwner() == Projectile::Player)
+                {
+                    if(gameO->getType() == GameObject::EPC)
+                    {
+                        Enemy *e = reinterpret_cast<Enemy*>(gameO);
+                        e->takeDamage(projectiles[i]->getDamage());
+                        projectiles.erase(projectiles.begin() + i);
+                    }
+                }
+                else if(projectiles[i]->getOwner() == Projectile::Enemy)
+                {
+                    if(projectiles[i]->getOwner() == Projectile::Enemy)
+                    {
+                        if(gameO->getType() == GameObject::PC)
+                        {
+                            Player *p = reinterpret_cast<Player*>(gameO);
+                            p->death();
+                            projectiles.erase(projectiles.begin() + i);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
