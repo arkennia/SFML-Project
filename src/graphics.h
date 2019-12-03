@@ -16,6 +16,7 @@ public:
     void render(sf::Text &text);
     void run();
     void createTexture(std::string path, GameObject &obj);    
+    sf::RenderWindow *getWindow() const;
 
 private:
     sf::RenderWindow *window;
