@@ -7,12 +7,17 @@ GameObject::GameObject() : sf::Sprite()
     textures = NULL;
     currentImage = 0;
     numImages = 0;
-    animationSpeed = 2.f;
+    animationSpeed = 1.f;
 }
 
 GameObject::GameObject(GameObject::Type type)
 {
     this->type = type;
+    textures = NULL;
+    currentImage = 0;
+    numImages = 0;
+    animationSpeed = .2f;
+    enable();
 }
 
 GameObject::~GameObject()
