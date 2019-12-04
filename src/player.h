@@ -28,7 +28,7 @@ public:
     void setLives(const int32_t &value);
 
 protected:
-    static const int32_t defaultAttackSpeed = 600;
+    static const int32_t defaultAttackSpeed = 300;
     static const int32_t defaultProjectileVelocity = 600;
     int currentAttackSpeed;
     float currentProjectileVelocity;

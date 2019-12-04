@@ -25,7 +25,7 @@ Projectile *Enemy::shoot(float velocity, int32_t attackSpeed)
         currentAttackSpeed = attackSpeed;
         currentProjectileVelocity = -velocity;
         p->rotate(180.f);
-        p->setVelocity(currentProjectileVelocity);
+        p->setVelocity(-velocity);
         p->setDamage(1);
         //p->initDrawable(projectile_path);
 		p->setTexture(Graphics::enemyProjectileTexture->texture);

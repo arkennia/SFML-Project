@@ -84,8 +84,8 @@ void Graphics::generateTextures()
 {
 	playerTexture = createTexture("triangle.png");
 	enemyTexture = createTexture("enemy.png");
-	enemyProjectileTexture = createTexture("triangle.png");
-	playerProjectleTexture = createTexture("triangle.png");
+	enemyProjectileTexture = createTexture("enemyLaser.png");
+	playerProjectleTexture = createTexture("playerLaser.png");
 }
 
 sf::RenderWindow *Graphics::getWindow() const

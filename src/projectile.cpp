@@ -46,6 +46,11 @@ bool Projectile::isOffScreen()
     return this->getPosition().y < 0 || this->getPosition().y > HEIGHT;
 }
 
+float Projectile::getVelocity() const
+{
+	return velocity;
+}
+
 Projectile::Owner Projectile::getOwner() const
 {
     return o;

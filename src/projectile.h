@@ -23,7 +23,7 @@ public:
     void setAttackSpeed(const int32_t &value);
     int getDamage() const;
     bool isOffScreen();
-
+	float getVelocity() const;
 
     Owner getOwner() const;
     void setOwner(const Owner &value);
