@@ -32,6 +32,7 @@ Projectile *Enemy::shoot(float velocity, int32_t attackSpeed)
         p->setOrigin(p->getLocalBounds().width/2, p->getLocalBounds().height/2);
         p->setPosition(this->getPosition().x, this->getPosition().y);
         p->setOwner(Projectile::Enemy);
+        p->setColor(sf::Color::Yellow);
         attackClock.restart();
         return p;
     }

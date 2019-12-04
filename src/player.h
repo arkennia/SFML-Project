@@ -14,7 +14,7 @@ public:
     float getMoveSpeed() const;
     void setMoveSpeed(float value);
     Projectile* shoot(int32_t velocity = defaultProjectileVelocity, int32_t attackSpeed = defaultAttackSpeed);
-    uint32_t getLives() const;
+    int32_t getLives() const;
     void death();
     float getProjectileSpeed() const;
     void setProjectileSpeed(float value);
@@ -25,13 +25,15 @@ public:
     void setCurrentProjectileVelocity(float value);
     bool isDead();
 
+    void setLives(const int32_t &value);
+
 protected:
-    static const int32_t defaultAttackSpeed = 300;
-    static const int32_t defaultProjectileVelocity = 300;
+    static const int32_t defaultAttackSpeed = 600;
+    static const int32_t defaultProjectileVelocity = 600;
     int currentAttackSpeed;
     float currentProjectileVelocity;
     const std::string projectile_path = "triangle.png";
-    uint32_t lives;
+    int32_t lives;
     float moveSpeed;
     float projectileSpeed;
     sf::Clock attackClock;

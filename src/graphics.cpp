@@ -1,6 +1,8 @@
 #include "graphics.h"
 #include "gameobject.h"
 #include "projectile.h"
+#include "explosion.h"
+
 Graphics::~Graphics()
 {
     if(window)
@@ -25,7 +27,14 @@ void Graphics::render(std::vector<GameObject *> &objs, std::vector<Projectile*> 
     {
         if(g->shouldAnimate())
         {
-            g->animate();
+            if(g->getType() == GameObject::Explosion)
+            {
+                (reinterpret_cast<Explosion*>(g))->animate();
+            }
+            else
+            {
+                g->animate();
+            }
         }
         if(g->isEnabled())
             window->draw(*g);
@@ -45,6 +54,11 @@ void Graphics::render(sf::Text &text)
 void Graphics::createTexture(std::string path, GameObject &obj)
 {
     obj.initDrawable(path);
+}
+
+sf::RenderWindow *Graphics::getWindow() const
+{
+    return window;
 }
 
 

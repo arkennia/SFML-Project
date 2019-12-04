@@ -48,7 +48,7 @@ Projectile *Player::shoot(int32_t velocity, int32_t attackSpeed)
     else return NULL;
 }
 
-uint32_t Player::getLives() const
+int32_t Player::getLives() const
 {
     return lives;
 }
@@ -98,6 +98,11 @@ void Player::setCurrentProjectileVelocity(float value)
 bool Player::isDead()
 {
     return lives <= 0;
+}
+
+void Player::setLives(const int32_t &value)
+{
+    lives = value;
 }
 
 

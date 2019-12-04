@@ -1,15 +1,28 @@
 #include "game.h"
 #include "graphics.h"
 #include "enemy.h"
+#include "audio.h"
 #include <cstring>
 #include <random>
 #include <thread>
+#include "explosion.h"
 
 sf::Time Game::deltaTime = sf::Time::Zero;
 Game::Game()
 {
     scoreNum = 0;
+    totalSpawnedEnemies = 0;
     spawnTimer.restart();
+    audio = NULL;
+    font = NULL;
+    score = NULL;
+    lives = NULL;
+    gameDone = NULL;
+    audio = NULL;
+    player = NULL;
+    background = NULL;
+    graphics = NULL;
+    window = NULL;
 }
 
 Game::~Game()
@@ -22,6 +35,11 @@ Game::~Game()
         delete score;
     if(font)
         delete font;
+    if(lives)
+        delete lives;
+    delete level;
+    texts.clear();
+    delete audio;
 }
 
 /*
@@ -33,18 +51,8 @@ void Game::run()
     shouldClose = false;
     gameOver = false;
     init();
-    initText();
-    Player o = *new Player;
-    graphics->createTexture("triangle.png", o);
-    o.scale(2.f, 2.f);
-    o.setOrigin(o.getLocalBounds().width/2,o.getLocalBounds().height/2);
-    o.setPosition(WIDTH/2, HEIGHT-o.getLocalBounds().height);
-    gameObjects.push_back(&o);
-    background = new GameObject(GameObject::Other);
-    background->loadImages("resources/starBackground", ".png", 3);
-    createEnemies(1, 500, 1000, 300, 1, "enemy.png");    
-    sf::Clock clock;    
-    player = &o;    
+    //initText();
+    sf::Clock clock;      
     while(window->isOpen())
     {
         deltaTime = clock.getElapsedTime();
@@ -52,12 +60,17 @@ void Game::run()
         handleKeys(deltaTime);
         checkCollisions();
         updateGameObjects();
+        manageLevel();
         if(gameOver)
         {
-            std::cerr << "Game over!" << std::endl;
-            gameObjects.clear();
-            projectiles.clear();
-            texts.push_back(gameDone);
+            //std::cerr << "Game over!" << std::endl;
+            if(gameObjects.empty() == false)
+                gameObjects.clear();
+            if(projectiles.empty() == false)
+            {
+                projectiles.clear();
+                texts.push_back(gameDone);
+            }
         }
         else spawnEnemy();
         sf::Event event;
@@ -112,6 +125,9 @@ void Game::init()
     window = new sf::RenderWindow(sf::VideoMode(WIDTH, HEIGHT), window_name, sf::Style::Close | sf::Style::Titlebar);
     window->setFramerateLimit(DEFAULT_FPS);
     graphics = new Graphics(*window);
+    audio = new Audio;
+    audio->init();
+    restart();
 }
 
 /*
@@ -164,7 +180,18 @@ void Game::handleKeys(sf::Time elapsedTime)
 		//shoot
         Projectile *p = player->shoot();
         if(p != NULL)
+        {
             projectiles.push_back(p);
+            audio->playShoot(*player);
+        }
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+    {
+        //restart
+        if(gameOver)
+        {
+            restart();
+        }
     }
 }
 
@@ -181,6 +208,17 @@ void Game::updateGameObjects()
         player->disable();
         return;
     }
+    else
+    {
+        if(player->getLives() >= 0)
+        {
+            lives->setString("Lives: " + std::to_string(player->getLives()));
+        }
+        else
+        {
+            lives->setString("Lives: 0");
+        }
+    }
     for(size_t i = 0; i < projectiles.size(); i++)
     {
         projectiles[i]->updatePosition(deltaTime);
@@ -192,7 +230,7 @@ void Game::updateGameObjects()
     Enemy *e;
     for(size_t i = 1; i < gameObjects.size(); i++)
     {
-        fireChance = rand() % 50 + 1;
+        fireChance = rand() % 60 + 1;
         e = reinterpret_cast<Enemy*>(gameObjects[i]);
         if(e->isDead() == false)
         {
@@ -200,12 +238,19 @@ void Game::updateGameObjects()
             {
                 Projectile* p = e->shoot(e->getProjectileSpeed(), e->getCurrentAttackSpeed());
                 if(p != NULL)
+                {
                     projectiles.push_back(p);
+                    audio->playShoot(*e);
+                }
             }
         }
-        else
+        else if(e->getType() == GameObject::EPC)
         {
             scoreNum += e->getScoreValue();
+            Explosion *explosion = new Explosion;
+            explosion->init();
+            explosion->setPosition(e->getPosition());
+            gameObjects.push_back(explosion);
             gameObjects.erase(gameObjects.begin() + i);
         }
     }
@@ -237,6 +282,7 @@ Enemy *Game::createEnemy(int32_t moveSpeed, int32_t attackSpeed, uint32_t projec
     e->setProjectileSpeed(projectileSpeed);
     e->setCurrentAttackSpeed(attackSpeed);
     e->setMoveSpeed(moveSpeed);
+    totalSpawnedEnemies++;
     return e;
 }
 
@@ -270,6 +316,7 @@ void Game::checkCollisions()
                         projectiles.erase(projectiles.begin() + i);
                     }
                 }
+                audio->playImpact();
             }
         }
     }
@@ -289,14 +336,91 @@ void Game::initText()
     gameDone->setFont(*font);
     gameDone->setCharacterSize(64);
     gameDone->setPosition(0, HEIGHT/2);
+    lives = new sf::Text;
+    lives->setFont(*font);
+    lives->setCharacterSize(24);
+    lives->setFillColor(sf::Color::White);
+    lives->setPosition(0, HEIGHT - 24);
+    level = new sf::Text;
+    level->setFont(*font);
+    level->setCharacterSize(24);
+    level->setFillColor(sf::Color::White);
+    level->setString("Level 1");
+    level->setPosition(WIDTH - (level->getLocalBounds().width + 4), 0);
+    texts.push_back(level);
+    texts.push_back(lives);
+
 }
 
 void Game::spawnEnemy()
 {
     if(spawnTimer.getElapsedTime().asSeconds() >= spawnSpeed)
     {
-        createEnemies(1, 300, 1000, 200, 1, "enemy.png");
+        createEnemies(1, 300, 1000, 500, 1, "enemy.png");
         spawnTimer.restart();
+    }
+}
+
+void Game::restart()
+{
+    gameObjects.clear();
+    projectiles.clear();
+    texts.clear();
+    Player *o = new Player;
+    o->setLives(2);
+    graphics->createTexture("triangle.png", *o);
+    o->setColor(sf::Color::Blue);
+    o->scale(2.f, 2.f);
+    o->setOrigin(o->getLocalBounds().width/2,o->getLocalBounds().height/2);
+    o->setPosition(WIDTH/2, HEIGHT-(o->getLocalBounds().height + 24));
+    gameObjects.push_back(o);
+    background = new GameObject(GameObject::Other);
+    background->loadImages("resources/starBackground", ".png", 3);
+    createEnemies(1, 500, 1000, 300, 1, "enemy.png");
+    player = o;
+    initText();
+    shouldClose = false;
+    gameOver = false;
+    spawnTimer.restart();
+    scoreNum = 0;
+}
+
+void Game::manageLevel()
+{
+    if(totalSpawnedEnemies == LEVEL1 && currentLevel != "Level 1")
+    {
+        spawnSpeed = 5.f;
+        currentLevel = "Level 1";
+        level->setString(currentLevel);
+        player->setLives(player->getLives() + 1);
+    }
+    else if(totalSpawnedEnemies == LEVEL2 && currentLevel != "Level 2")
+    {
+        spawnSpeed = 4.f;
+        currentLevel = "Level 2";
+        level->setString(currentLevel);
+        player->setLives(player->getLives() + 1);
+    }
+    else if(totalSpawnedEnemies == LEVEL3 && currentLevel != "Level 3")
+    {
+        spawnSpeed = 3.f;
+        currentLevel = "Level 3";
+        level->setString(currentLevel);
+        player->setLives(player->getLives() + 1);
+    }
+    else if(totalSpawnedEnemies == LEVEL4 && currentLevel != "Level 4")
+    {
+        spawnSpeed = 2.f;
+        currentLevel = "Level 4";
+        level->setString(currentLevel);
+        player->setLives(player->getLives() + 1);
+    }
+    else if(totalSpawnedEnemies == LEVEL5 && currentLevel != "Level 5")
+    {
+        spawnSpeed = 1.f;
+        currentLevel = "Level 5";
+        level->setString(currentLevel);
+        player->setLives(player->getLives() + 1);
     }
 }
 

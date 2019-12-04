@@ -8,6 +8,8 @@ GameObject::GameObject() : sf::Sprite()
     currentImage = 0;
     numImages = 0;
     animationSpeed = 1.f;
+    type = Other;
+    enable();
 }
 
 GameObject::GameObject(GameObject::Type type)
@@ -125,6 +127,7 @@ void GameObject::loadImages(std::string name, std::string extension, uint16_t nu
         textures->push_back(texture);
     }
     this->numImages = numImages;
+    this->setTexture(*textures->at(0));
 }
 
 //void GameObject::loadImages(std::string path, sf::Vector2i spriteDim, uint16_t numImages)

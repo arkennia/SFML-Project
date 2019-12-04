@@ -12,7 +12,8 @@ public:
         PC, //player character
         EPC, //enemy (non) player character
         NPC,//non player character
-        Other //other types, such as projectiles
+        Other, //other types, such as projectiles
+        Explosion
     };
     GameObject();
     GameObject(Type type);
