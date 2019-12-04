@@ -1,5 +1,6 @@
 #include "player.h"
 #include "projectile.h"
+#include "graphics.h"
 
 Player::Player() : GameObject()
 {
@@ -37,7 +38,8 @@ Projectile *Player::shoot(int32_t velocity, int32_t attackSpeed)
         currentProjectileVelocity = velocity;
         p->setVelocity(velocity);
         p->setDamage(1);
-        p->initDrawable(projectile_path);
+        //p->initDrawable(projectile_path);
+		p->setTexture(Graphics::playerProjectleTexture->texture);
         p->scale(1.f, 1.f);
         p->setOrigin(16, 16);
         p->setPosition(this->getPosition().x, this->getPosition().y - this->getLocalBounds().height/2);

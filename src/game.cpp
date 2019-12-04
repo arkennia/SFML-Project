@@ -14,6 +14,7 @@ Game::Game()
     scoreNum = 0;
     spawnQuantity = 1;
     totalSpawnedEnemies = 0;
+	currentEnemiesSpawned = 0;
     spawnTimer.restart();
     audio = NULL;
     font = NULL;
@@ -25,6 +26,11 @@ Game::Game()
     background = NULL;
     graphics = NULL;
     window = NULL;
+	level = NULL;
+	gameOver = false;
+	maxEnemies = 5;
+	fireChance = 0;
+	shouldClose = false;
 }
 
 Game::~Game()
@@ -194,6 +200,7 @@ void Game::init()
     graphics = new Graphics(*window);
     audio = new Audio;
     audio->init();
+	graphics->generateTextures();
     restart();
 }
 
@@ -319,6 +326,7 @@ void Game::updateGameObjects()
             explosion->setPosition(e->getPosition());
             gameObjects.push_back(explosion);
             gameObjects.erase(gameObjects.begin() + i);
+			currentEnemiesSpawned--;
         }
     }
 }
@@ -333,7 +341,8 @@ void Game::createEnemies(uint32_t quantity, int32_t moveSpeed, int32_t attackSpe
     {
         e = createEnemy(moveSpeed, attackSpeed, projectileSpeed, lives);
         e->setPosition(rand() % WIDTH, rand() % (HEIGHT - 300));
-        graphics->createTexture(texture_path,  *e);
+        //graphics->createTexture(texture_path,  *e);
+		e->setTexture(Graphics::enemyTexture->texture);
         e->setOrigin(e->getLocalBounds().width/2 ,e->getLocalBounds().height/2);
         gameObjects.push_back(e);
     }
@@ -350,6 +359,7 @@ Enemy *Game::createEnemy(int32_t moveSpeed, int32_t attackSpeed, uint32_t projec
     e->setCurrentAttackSpeed(attackSpeed);
     e->setMoveSpeed(moveSpeed);
     totalSpawnedEnemies++;
+	currentEnemiesSpawned++;
     return e;
 }
 
@@ -424,7 +434,10 @@ void Game::spawnEnemy()
 {
     if(spawnTimer.getElapsedTime().asSeconds() >= spawnSpeed)
     {
-        createEnemies(spawnQuantity, 300, 1000, 500, 1, "enemy.png");
+		if (currentEnemiesSpawned < maxEnemies)
+		{
+			createEnemies(spawnQuantity, 300, 1000, 500, 1, "enemy.png");
+		}
         spawnTimer.restart();
     }
 }
@@ -434,9 +447,12 @@ void Game::restart()
     gameObjects.clear();
     projectiles.clear();
     texts.clear();
+	totalSpawnedEnemies = 0;
+	currentEnemiesSpawned = 0;
     Player *o = new Player;
     o->setLives(2);
-    graphics->createTexture("triangle.png", *o);
+    //graphics->createTexture("triangle.png", *o);
+	o->setTexture(Graphics::playerTexture->texture);
     o->setColor(sf::Color::Blue);
     o->scale(2.f, 2.f);
     o->setOrigin(o->getLocalBounds().width/2,o->getLocalBounds().height/2);
@@ -462,37 +478,43 @@ void Game::manageLevel()
         spawnQuantity = 3;
         level->setString(currentLevel);
         player->setLives(player->getLives() + 1);
+		maxEnemies = 10;
     }
-    else if(totalSpawnedEnemies == LEVEL2 && currentLevel != "Level 2")
+    else if(totalSpawnedEnemies >= LEVEL2 && totalSpawnedEnemies < LEVEL3 && currentLevel != "Level 2")
     {
         spawnSpeed = 3.7f;
-        spawnQuantity = 3;
+        spawnQuantity = 2;
         currentLevel = "Level 2";
         level->setString(currentLevel);
         player->setLives(player->getLives() + 1);
+		maxEnemies = 15;
     }
-    else if(totalSpawnedEnemies == LEVEL3 && currentLevel != "Level 3")
+    else if(totalSpawnedEnemies >= LEVEL3 && totalSpawnedEnemies < LEVEL4 && currentLevel != "Level 3")
     {
         spawnSpeed = 3.f;
         currentLevel = "Level 3";
         spawnQuantity = 2;
         level->setString(currentLevel);
         player->setLives(player->getLives() + 1);
+		maxEnemies = 20;
     }
-    else if(totalSpawnedEnemies == LEVEL4 && currentLevel != "Level 4")
+    else if(totalSpawnedEnemies >= LEVEL4 && totalSpawnedEnemies < LEVEL5 && currentLevel != "Level 4")
     {
         spawnSpeed = 2.f;
         currentLevel = "Level 4";
         spawnQuantity = 3;
         level->setString(currentLevel);
         player->setLives(player->getLives() + 1);
+		maxEnemies = 25;
     }
-    else if(totalSpawnedEnemies == LEVEL5 && currentLevel != "Level 5")
+    else if(totalSpawnedEnemies >= LEVEL5 && currentLevel != "Level 5")
     {
         spawnSpeed = 1.f;
         currentLevel = "Level 5";
+		spawnQuantity = 1;
         level->setString(currentLevel);
         player->setLives(player->getLives() + 1);
+		maxEnemies = 30;
     }
 }
 

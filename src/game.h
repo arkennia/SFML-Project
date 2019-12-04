@@ -61,6 +61,8 @@ private:
     sf::Clock spawnTimer;
     float spawnSpeed = 4;
     uint32_t spawnQuantity;
+	int maxEnemies;
+	int currentEnemiesSpawned;
     int totalSpawnedEnemies;
     std::string currentLevel;
     int scoreNum;
