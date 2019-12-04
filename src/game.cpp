@@ -157,10 +157,11 @@ void Game::testRun()
         if(!testCol)
         {
             testCol = true;
-            t.testCollision(*this);
             t.testScore(*this);
+			t.testCollision(*this);
         }
         t.testMovement(*this);
+		t.testProjectile(*this);
     }
     cleanup();
 }

@@ -6,9 +6,9 @@
 int main()
 {
     Game g;
-    g.run();
+   // g.run();
 //    Game g;
-//    g.testRun();
+	g.testRun();
 
     return 0;
 }
