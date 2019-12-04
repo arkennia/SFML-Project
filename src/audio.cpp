@@ -59,6 +59,6 @@ void Audio::init()
 
     backgroundMusic->sound.setLoop(true);
     backgroundMusic->sound.play();
-    backgroundMusic->sound.setVolume(10.f);
-    enemyShoot->sound.setVolume(10.f);
+    backgroundMusic->sound.setVolume(30.f);
+    enemyShoot->sound.setVolume(80.f);
 }

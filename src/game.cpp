@@ -12,6 +12,7 @@ sf::Time Game::deltaTime = sf::Time::Zero;
 Game::Game()
 {
     scoreNum = 0;
+    spawnQuantity = 1;
     totalSpawnedEnemies = 0;
     spawnTimer.restart();
     audio = NULL;
@@ -371,6 +372,7 @@ void Game::checkCollisions()
                         Enemy *e = reinterpret_cast<Enemy*>(gameO);
                         e->takeDamage(projectiles[i]->getDamage());
                         projectiles.erase(projectiles.begin() + i);
+                        audio->playImpact();
                     }
                 }
                 else if(projectiles[i]->getOwner() == Projectile::Enemy)
@@ -380,9 +382,9 @@ void Game::checkCollisions()
                         Player *p = reinterpret_cast<Player*>(gameO);
                         p->death();
                         projectiles.erase(projectiles.begin() + i);
+                        audio->playImpact();
                     }
                 }
-                audio->playImpact();
             }
         }
     }
@@ -457,13 +459,14 @@ void Game::manageLevel()
     {
         spawnSpeed = 5.f;
         currentLevel = "Level 1";
+        spawnQuantity = 3;
         level->setString(currentLevel);
         player->setLives(player->getLives() + 1);
     }
     else if(totalSpawnedEnemies == LEVEL2 && currentLevel != "Level 2")
     {
         spawnSpeed = 3.7f;
-        spawnQuantity = 2;
+        spawnQuantity = 3;
         currentLevel = "Level 2";
         level->setString(currentLevel);
         player->setLives(player->getLives() + 1);
@@ -472,6 +475,7 @@ void Game::manageLevel()
     {
         spawnSpeed = 3.f;
         currentLevel = "Level 3";
+        spawnQuantity = 2;
         level->setString(currentLevel);
         player->setLives(player->getLives() + 1);
     }

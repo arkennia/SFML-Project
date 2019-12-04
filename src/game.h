@@ -4,7 +4,7 @@
 #define WIDTH 640
 #define HEIGHT 860
 #define DEFAULT_FPS 60
-#define LEVEL1 0
+#define LEVEL1 1
 #define LEVEL2 20
 #define LEVEL3 60
 #define LEVEL4 120
@@ -60,7 +60,7 @@ private:
 
     sf::Clock spawnTimer;
     float spawnSpeed = 4;
-    int spawnQuantity = 1;
+    uint32_t spawnQuantity;
     int totalSpawnedEnemies;
     std::string currentLevel;
     int scoreNum;
