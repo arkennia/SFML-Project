@@ -27,12 +27,14 @@ public:
     Game();
     ~Game();
     void run();
+    void testRun();
     void cleanup();
     void addGameObject(GameObject &object);
     void init();
 
     static sf::Time getDeltaTime();
 
+    friend class TestClass;
 private:
 
     //Constants
@@ -58,6 +60,7 @@ private:
 
     sf::Clock spawnTimer;
     float spawnSpeed = 4;
+    int spawnQuantity = 1;
     int totalSpawnedEnemies;
     std::string currentLevel;
     int scoreNum;

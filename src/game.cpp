@@ -6,6 +6,7 @@
 #include <random>
 #include <thread>
 #include "explosion.h"
+#include "testclass.h"
 
 sf::Time Game::deltaTime = sf::Time::Zero;
 Game::Game()
@@ -95,6 +96,71 @@ void Game::run()
             score->setString("Score: " + std::to_string(scoreNum));
             graphics->render(gameObjects, projectiles, background, texts);
         }
+    }
+    cleanup();
+}
+
+void Game::testRun()
+{
+    bool testCol = false;
+    TestClass t;
+    srand(std::time(0));
+    shouldClose = false;
+    gameOver = false;
+    init();
+    //initText();
+    sf::Clock clock;
+    while(window->isOpen())
+    {
+        deltaTime = clock.getElapsedTime();
+        clock.restart();
+        //handleKeys(deltaTime);
+
+        checkCollisions();
+        updateGameObjects();
+        //manageLevel();
+
+        if(gameOver)
+        {
+            //std::cerr << "Game over!" << std::endl;
+            if(gameObjects.empty() == false)
+                gameObjects.clear();
+            if(projectiles.empty() == false)
+            {
+                projectiles.clear();
+                texts.push_back(gameDone);
+            }
+        }
+        //else spawnEnemy();
+        sf::Event event;
+        while(window->pollEvent(event))
+        {
+            switch(event.type)
+            {
+                case sf::Event::Closed:
+                    window->close();
+                    shouldClose = true;
+                    break;
+                default:
+                    break;
+            }
+            if(shouldClose)
+            {
+                window->close();
+            }
+        }
+        if(!shouldClose)
+        {
+            score->setString("Score: " + std::to_string(scoreNum));
+            graphics->render(gameObjects, projectiles, background, texts);
+        }
+        if(!testCol)
+        {
+            testCol = true;
+            t.testCollision(*this);
+            t.testScore(*this);
+        }
+        t.testMovement(*this);
     }
     cleanup();
 }
@@ -356,7 +422,7 @@ void Game::spawnEnemy()
 {
     if(spawnTimer.getElapsedTime().asSeconds() >= spawnSpeed)
     {
-        createEnemies(1, 300, 1000, 500, 1, "enemy.png");
+        createEnemies(spawnQuantity, 300, 1000, 500, 1, "enemy.png");
         spawnTimer.restart();
     }
 }
@@ -396,7 +462,8 @@ void Game::manageLevel()
     }
     else if(totalSpawnedEnemies == LEVEL2 && currentLevel != "Level 2")
     {
-        spawnSpeed = 4.f;
+        spawnSpeed = 3.7f;
+        spawnQuantity = 2;
         currentLevel = "Level 2";
         level->setString(currentLevel);
         player->setLives(player->getLives() + 1);
@@ -412,6 +479,7 @@ void Game::manageLevel()
     {
         spawnSpeed = 2.f;
         currentLevel = "Level 4";
+        spawnQuantity = 3;
         level->setString(currentLevel);
         player->setLives(player->getLives() + 1);
     }
