@@ -27,10 +27,13 @@ Game::Game()
     graphics = NULL;
     window = NULL;
 	level = NULL;
+	startText = NULL;
 	gameOver = false;
 	maxEnemies = 5;
 	fireChance = 0;
+	startButton = NULL;
 	shouldClose = false;
+	startup = true;
 }
 
 Game::~Game()
@@ -59,6 +62,7 @@ void Game::run()
     shouldClose = false;
     gameOver = false;
     init();
+	startUp();
     //initText();
     sf::Clock clock;      
     while(window->isOpen())
@@ -66,21 +70,25 @@ void Game::run()
         deltaTime = clock.getElapsedTime();
         clock.restart();
         handleKeys(deltaTime);
-        checkCollisions();
-        updateGameObjects();
-        manageLevel();
-        if(gameOver)
-        {
-            //std::cerr << "Game over!" << std::endl;
-            if(gameObjects.empty() == false)
-                gameObjects.clear();
-            if(projectiles.empty() == false)
-            {
-                projectiles.clear();
-                texts.push_back(gameDone);
-            }
-        }
-        else spawnEnemy();
+		if (startup == false)
+		{
+			checkCollisions();
+			updateGameObjects();
+			manageLevel();
+			if (gameOver)
+			{
+				//std::cerr << "Game over!" << std::endl;
+				if (gameObjects.empty() == false)
+					gameObjects.clear();
+				if (projectiles.empty() == false)
+				{
+					projectiles.clear();
+					texts.push_back(gameDone);
+				}
+			}
+			else spawnEnemy();
+			score->setString("Score: " + std::to_string(scoreNum));
+		}
         sf::Event event;
         while(window->pollEvent(event))
         {
@@ -98,11 +106,12 @@ void Game::run()
                 window->close();
             }            
         }
-        if(!shouldClose)
-        {
-            score->setString("Score: " + std::to_string(scoreNum));
-            graphics->render(gameObjects, projectiles, background, texts);
-        }
+		if (!shouldClose && !startup)
+		{
+			graphics->render(gameObjects, projectiles, background, texts);
+		}
+		else if(startup)
+			graphics->render(*startText, *startButton);
     }
     cleanup();
 }
@@ -201,7 +210,6 @@ void Game::init()
     audio = new Audio;
     audio->init();
 	graphics->generateTextures();
-    restart();
 }
 
 /*
@@ -220,45 +228,44 @@ sf::Time Game::getDeltaTime()
  */
 void Game::handleKeys(sf::Time elapsedTime)
 {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	if (player != NULL)
 	{
-        if (player->getPosition().x >= 15)
-        {
-            player->updatePosition(-player->getMoveSpeed(), 0, elapsedTime);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		{
+			if (player->getPosition().x >= 15)
+			{
+				player->updatePosition(-player->getMoveSpeed(), 0, elapsedTime);
 
-            if (player->getPosition().x < 15)
-            {
-                player->setPosition(15, player->getPosition().y);
-            }
-		}
-
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-	{
-        if (player->getPosition().x <= WIDTH - 16)
-        {
-            player->updatePosition(player->getMoveSpeed(), 0, elapsedTime);
-            if (player->getPosition().x > WIDTH - 16)
-            {
-                player->setPosition(WIDTH - 16, player->getPosition().y);
+				if (player->getPosition().x < 15)
+				{
+					player->setPosition(15, player->getPosition().y);
+				}
 			}
 
 		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		{
+			if (player->getPosition().x <= WIDTH - 16)
+			{
+				player->updatePosition(player->getMoveSpeed(), 0, elapsedTime);
+				if (player->getPosition().x > WIDTH - 16)
+				{
+					player->setPosition(WIDTH - 16, player->getPosition().y);
+				}
+
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			//shoot
+			Projectile* p = player->shoot();
+			if (p != NULL)
+			{
+				projectiles.push_back(p);
+				audio->playShoot(*player);
+			}
+		}
 	}
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-    {
-        shouldClose = true;
-    }
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Mouse::isButtonPressed(sf::Mouse::Left))
-	{
-		//shoot
-        Projectile *p = player->shoot();
-        if(p != NULL)
-        {
-            projectiles.push_back(p);
-            audio->playShoot(*player);
-        }
-    }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::R))
     {
         //restart
@@ -267,6 +274,17 @@ void Game::handleKeys(sf::Time elapsedTime)
             restart();
         }
     }
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+	{
+		shouldClose = true;
+	}
+	if (startup)
+	{
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+		{
+			startGame(sf::Mouse::getPosition(*graphics->getWindow()));
+		}
+	}
 }
 
 /*
@@ -296,7 +314,7 @@ void Game::updateGameObjects()
     for(size_t i = 0; i < projectiles.size(); i++)
     {
         projectiles[i]->updatePosition(deltaTime);
-        if(projectiles[i]->isOffScreen())
+        if(projectiles[i]->isOffScreen() || projectiles[i]->getLastPosition() == projectiles[i]->getPosition())
         {
             projectiles.erase(projectiles.begin() + i);
         }
@@ -328,6 +346,13 @@ void Game::updateGameObjects()
             gameObjects.erase(gameObjects.begin() + i);
 			currentEnemiesSpawned--;
         }
+		else if (e->getType() == GameObject::Explosion)
+		{
+			if (e->isEnabled() == false)
+			{
+				gameObjects.erase(gameObjects.begin() + i);
+			}
+		}
     }
 }
 
@@ -337,12 +362,14 @@ void Game::updateGameObjects()
 void Game::createEnemies(uint32_t quantity, int32_t moveSpeed, int32_t attackSpeed, uint32_t projectileSpeed, uint32_t lives, std::string texture_path)
 {
     Enemy *e;
+	int text = 0;
     for(size_t i = 0; i < quantity; i++)
     {
+		text = rand() % 20;
         e = createEnemy(moveSpeed, attackSpeed, projectileSpeed, lives);
-        e->setPosition(rand() % WIDTH, rand() % (HEIGHT - 300));
+        e->setPosition(rand() % (WIDTH - 10), rand() % (HEIGHT - 300));
         //graphics->createTexture(texture_path,  *e);
-		e->setTexture(Graphics::enemyTexture->texture);
+		e->setTexture((text >= 10 ? Graphics::enemyTexture->texture : Graphics::enemyTexture2->texture));
         e->setOrigin(e->getLocalBounds().width/2 ,e->getLocalBounds().height/2);
         gameObjects.push_back(e);
     }
@@ -424,7 +451,7 @@ void Game::initText()
     level->setCharacterSize(24);
     level->setFillColor(sf::Color::White);
     level->setString("Level 1");
-    level->setPosition(WIDTH - (level->getLocalBounds().width + 4), 0);
+    level->setPosition(WIDTH - (level->getLocalBounds().width + 8), 0);
     texts.push_back(level);
     texts.push_back(lives);
 
@@ -453,8 +480,7 @@ void Game::restart()
     o->setLives(2);
     //graphics->createTexture("triangle.png", *o);
 	o->setTexture(Graphics::playerTexture->texture);
-    o->setColor(sf::Color::Blue);
-    o->scale(2.f, 2.f);
+    o->scale(2.5f, 2.5f);
     o->setOrigin(o->getLocalBounds().width/2,o->getLocalBounds().height/2);
     o->setPosition(WIDTH/2, HEIGHT-(o->getLocalBounds().height + 24));
     gameObjects.push_back(o);
@@ -516,5 +542,36 @@ void Game::manageLevel()
         player->setLives(player->getLives() + 1);
 		maxEnemies = 30;
     }
+}
+
+void Game::startUp()
+{
+	font = new sf::Font;
+	font->loadFromFile("resources/PLANK___.TTF");
+	startText = new sf::Text;
+	startText->setFont(*font);
+	startText->setFillColor(sf::Color::White);
+	startText->setPosition(WIDTH/2, ((HEIGHT/2) - (startText->getLocalBounds().height + 128)));
+	startText->setCharacterSize(110);
+	startText->setLineSpacing(0.5f);
+	startText->setString("Space\nShooter");
+	startText->setOrigin(startText->getLocalBounds().width / 2, startText->getLocalBounds().height / 2);
+	startButton = new GameObject(GameObject::Other);
+	startButton->setTexture(Graphics::startButton->texture);
+	startButton->setOrigin(startButton->getLocalBounds().width / 2, startButton->getLocalBounds().height / 2);
+	startButton->setPosition(startText->getGlobalBounds().width / 2,
+		((HEIGHT / 2) - (startText->getLocalBounds().height - startButton->getLocalBounds().height - 256)));
+	//texts.push_back(startText);
+}
+
+void Game::startGame(sf::Vector2i mousePos)
+{
+	if (startButton->getGlobalBounds().contains(sf::Vector2f(mousePos)))
+	{
+		startup = false;
+		restart();
+		delete startButton;
+		delete startText;
+	}
 }
 

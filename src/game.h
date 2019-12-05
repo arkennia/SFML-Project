@@ -4,6 +4,7 @@
 #define WIDTH 640
 #define HEIGHT 860
 #define DEFAULT_FPS 60
+#define STARTTIME
 #define LEVEL1 1
 #define LEVEL2 20
 #define LEVEL3 60
@@ -40,6 +41,7 @@ private:
     //Constants
     bool shouldClose;
     bool gameOver;
+	bool startup;
     static sf::Time deltaTime;
     const std::string window_name = "Space Shooter";
     //Game Objects
@@ -57,9 +59,11 @@ private:
     void spawnEnemy();
     void restart();
     void manageLevel();
+	void startUp();
+	void startGame(sf::Vector2i mousePos);
 
     sf::Clock spawnTimer;
-    float spawnSpeed = 4;
+    float spawnSpeed = 4;	
     uint32_t spawnQuantity;
 	int maxEnemies;
 	int currentEnemiesSpawned;
@@ -72,9 +76,11 @@ private:
     sf::Text *lives;
     sf::Text *gameDone;
     sf::Text *level;
+	sf::Text* startText;
     Audio *audio;
     Player *player;
     GameObject *background;
+	GameObject* startButton;
     Graphics *graphics;
     sf::RenderWindow *window;
 };

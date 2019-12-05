@@ -1,6 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#define MOVE_SPEED 500
+#define MOVE_SPEED 300
 
 #include <cstdint>
 #include "gameobject.h"

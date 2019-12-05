@@ -18,7 +18,7 @@ public:
     ~Graphics();
     Graphics(sf::RenderWindow &window);
     void render(std::vector<GameObject*> &objs, std::vector<Projectile *> projectiles, GameObject *background, std::vector<sf::Text *> texts);
-    void render(sf::Text &text);
+    void render(sf::Text &text, GameObject &g);
     void run();
     void createTexture(std::string path, GameObject &obj);   
 	Texture* Graphics::createTexture(std::string path);
@@ -27,9 +27,10 @@ public:
     sf::RenderWindow *getWindow() const;
 	static Texture* playerTexture;
 	static Texture* playerProjectleTexture;
-	static Texture *enemyTexture;
+	static Texture* enemyTexture;
+	static Texture* enemyTexture2;
 	static Texture* enemyProjectileTexture;
-
+	static Texture* startButton;
 private:
     sf::RenderWindow *window;
 	

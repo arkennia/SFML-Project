@@ -27,6 +27,7 @@ void Projectile::setVelocity(float newVel)
 
 void Projectile::updatePosition(sf::Time elapsed)
 {
+	lastPositon = getPosition();
     this->move(0, -velocity * elapsed.asSeconds());
 }
 
@@ -49,6 +50,11 @@ bool Projectile::isOffScreen()
 float Projectile::getVelocity() const
 {
 	return velocity;
+}
+
+sf::Vector2f Projectile::getLastPosition()
+{
+	return lastPositon;
 }
 
 Projectile::Owner Projectile::getOwner() const

@@ -24,6 +24,7 @@ public:
     int getDamage() const;
     bool isOffScreen();
 	float getVelocity() const;
+	sf::Vector2f getLastPosition();
 
     Owner getOwner() const;
     void setOwner(const Owner &value);
@@ -34,6 +35,7 @@ private:
     float velocity;
     int damage;
     int32_t attackSpeed;
+	sf::Vector2f lastPositon;
 };
 
 #endif 

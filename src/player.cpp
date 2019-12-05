@@ -40,7 +40,7 @@ Projectile *Player::shoot(int32_t velocity, int32_t attackSpeed)
         p->setDamage(1);
         //p->initDrawable(projectile_path);
 		p->setTexture(Graphics::playerProjectleTexture->texture);
-        p->scale(1.f, 1.f);
+        p->scale(1.2f, 1.2f);
         p->setOrigin(16, 16);
         p->setPosition(this->getPosition().x, this->getPosition().y - this->getLocalBounds().height/2);
         p->setOwner(Projectile::Player);

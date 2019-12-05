@@ -2,10 +2,13 @@
 #include "gameobject.h"
 #include "projectile.h"
 #include "explosion.h"
+#include <iostream>
 Graphics::Texture* Graphics::playerTexture = NULL;
 Graphics::Texture* Graphics::playerProjectleTexture = NULL;
 Graphics::Texture* Graphics::enemyTexture = NULL;
 Graphics::Texture* Graphics::enemyProjectileTexture = NULL;
+Graphics::Texture* Graphics::startButton = NULL;
+Graphics::Texture* Graphics::enemyTexture2 = NULL;
 
 Graphics::~Graphics()
 {
@@ -15,6 +18,8 @@ Graphics::~Graphics()
 	delete enemyTexture;
 	delete playerProjectleTexture;
 	delete playerTexture;
+	delete startButton;
+	delete enemyTexture2;
 }
 
 Graphics::Graphics(sf::RenderWindow &window)
@@ -37,7 +42,7 @@ void Graphics::render(std::vector<GameObject *> &objs, std::vector<Projectile*> 
         {
             if(g->getType() == GameObject::Explosion)
             {
-                (reinterpret_cast<Explosion*>(g))->animate();
+				(reinterpret_cast<Explosion*>(g))->animate();
             }
             else
             {
@@ -54,9 +59,12 @@ void Graphics::render(std::vector<GameObject *> &objs, std::vector<Projectile*> 
     window->display();
 }
 
-void Graphics::render(sf::Text &text)
+void Graphics::render(sf::Text &text, GameObject &g)
 {
+	window->clear(sf::Color::Black);
     window->draw(text);
+	window->draw(g);
+	window->display();
 }
 
 void Graphics::createTexture(std::string path, GameObject &obj)
@@ -82,10 +90,12 @@ Graphics::Texture* Graphics::copyTexture(const Texture& t)
 
 void Graphics::generateTextures()
 {
-	playerTexture = createTexture("triangle.png");
-	enemyTexture = createTexture("enemy.png");
+	playerTexture = createTexture("playerShip.png");
+	enemyTexture = createTexture("enemyShip.png");
 	enemyProjectileTexture = createTexture("enemyLaser.png");
 	playerProjectleTexture = createTexture("playerLaser.png");
+	startButton = createTexture("startButton.png");
+	enemyTexture2 = createTexture("enemyShip2.png");
 }
 
 sf::RenderWindow *Graphics::getWindow() const
